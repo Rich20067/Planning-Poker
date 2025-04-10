@@ -1,0 +1,35 @@
+<div class="fondo">
+  <div class="burbujeo"></div>
+  <h1 class="titulo-principal">
+    Bienvenido a Tu<br />
+    Poker Planning 🃏
+  </h1>
+  <div class="crear-partida-card">
+    <h2 class="titulo">🎡Crear Partida</h2>
+
+    <form [formGroup]="partidaForm" (ngSubmit)="crearPartida()">
+
+      <!-- Sección: Campo de Nombre -->
+      <div class="form-section">
+      
+        <input id="nombre" formControlName="nombre" placeholder="Nombre de la Partida" />
+
+        <div class="error" *ngIf="nombre?.touched && nombre?.invalid">
+          <div *ngIf="nombre?.errors?.['required']">El nombre es obligatorio.</div>
+          <div *ngIf="nombre?.errors?.['minlength']">Debe tener al menos 5 caracteres.</div>
+          <div *ngIf="nombre?.errors?.['maxlength']">No puede tener más de 20 caracteres.</div>
+          <div *ngIf="nombre?.errors?.['pattern']">
+            El nombre no debe contener solo números, ni caracteres especiales (_,.*#/-),
+            y máximo puede tener 3 números.
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Botón -->
+      <div class="form-footer">
+        <button type="submit">Empezemos 🎮</button>
+      </div>
+      
+    </form>
+  </div>
+</div>

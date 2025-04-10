@@ -1,0 +1,157 @@
+/* 🔧 Elimina márgenes globales y scroll extra */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+/* 🔄 Asegura que todos los elementos no hereden márgenes o paddings extra */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fondo completo adaptativo sin bordes blancos */
+.fondo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/assets/fondoo.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: flex-start; /* Alineado a la izquierda */
+  align-items: center;
+  padding-left: 4rem;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Capa de animación dorada */
+.burbujeo {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.burbujeo::before,
+.burbujeo::after {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.08) 12%, transparent 60%);
+  animation: flotar 25s infinite linear;
+}
+
+.burbujeo::after {
+  animation-duration: 40s;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 12%, transparent 60%);
+}
+
+@keyframes flotar {
+  0% {
+    transform: translate(0%, 0%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Tarjeta del formulario */
+.crear-partida-card {
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 100%;
+  max-width: 450px;
+  min-height: 250px;
+  z-index: 1;
+  margin-left: 625px;
+  margin-top: 14rem; /* 🔽 Esto lo baja */
+}
+
+.titulo-principal {
+  position: absolute;
+  top: 2rem;
+  left: 70%;
+  transform: translateX(-50%);
+  font-size: 2.8rem;
+  color: white;
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-top: 4rem;
+}
+
+/* Secciones internas del formulario */
+.titulo {
+  font-size: 1.8rem;
+  color: #e0e0e0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: center;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Botón */
+button {
+  width: 250px;
+  height: 45px;
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #ff9500;
+  color: rgb(10, 10, 10);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+button:hover {
+  background-color: #dc2f11;
+}
+
+/* Errores de validación */
+.error {
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+}
