@@ -1,9 +1,15 @@
 import { Routes } from '@angular/router';
-import { CrearPartidaComponent } from './components/crear-partida/crear-partida.component';
+import { CrearUsuarioAdministradorComponent } from './components/crear-usuario-administrador/crear-usuario-administrador.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: CrearPartidaComponent,
+    loadComponent: () =>
+      import('./components/crear-partida/crear-partida.component').then(m => m.CrearPartidaComponent)
+  },
+  {
+    path: 'crear-usuario-administrador',
+    loadComponent: () =>
+      import('./components/crear-usuario-administrador/crear-usuario-administrador.component').then(m => m.CrearUsuarioAdministradorComponent)
   }
 ];

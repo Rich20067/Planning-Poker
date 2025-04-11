@@ -8,10 +8,7 @@
     <h2 class="titulo">🎡Crear Partida</h2>
 
     <form [formGroup]="partidaForm" (ngSubmit)="crearPartida()">
-
-      <!-- Sección: Campo de Nombre -->
       <div class="form-section">
-      
         <input id="nombre" formControlName="nombre" placeholder="Nombre de la Partida" />
 
         <div class="error" *ngIf="nombre?.touched && nombre?.invalid">
@@ -27,9 +24,10 @@
 
       <!-- Sección: Botón -->
       <div class="form-footer">
-        <button type="submit">Empezemos 🎮</button>
+        <button class="boton-admin" type="submit">
+          Empecemos 🎮
+        </button>        
       </div>
-      
     </form>
   </div>
 </div>
