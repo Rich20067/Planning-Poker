@@ -11,5 +11,12 @@ export const routes: Routes = [
     path: 'crear-usuario-administrador',
     loadComponent: () =>
       import('./components/crear-usuario-administrador/crear-usuario-administrador.component').then(m => m.CrearUsuarioAdministradorComponent)
+  },
+  {
+    path: 'mesa-votacion',
+    loadComponent: () =>
+      import('./components/mesa-votacion/mesa-votacion.component')
+        .then(m => m.MesaVotacionComponent)
   }
+  
 ];

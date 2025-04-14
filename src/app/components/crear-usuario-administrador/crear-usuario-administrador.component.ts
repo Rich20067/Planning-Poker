@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-
+import { AvatarService } from '../../services/avatar.service'; 
 @Component({
   selector: 'app-crear-usuario-administrador',
   standalone: true,
@@ -14,7 +14,11 @@ export class CrearUsuarioAdministradorComponent {
   adminForm: FormGroup;
   nombrePartida: string = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private avatarService: AvatarService 
+  ) {
     this.adminForm = this.fb.group({
       nombre: [
         '',
@@ -28,7 +32,6 @@ export class CrearUsuarioAdministradorComponent {
       modo: ['', Validators.required]
     });
 
-    //  nombre de la partida desde el localStorage
     const nombreGuardado = localStorage.getItem('nombrePartida');
     if (nombreGuardado) {
       this.nombrePartida = nombreGuardado;
@@ -45,9 +48,16 @@ export class CrearUsuarioAdministradorComponent {
 
   crearUsuarioAdministrador() {
     if (this.adminForm.valid) {
-      const adminData: UsuarioAdministrador = this.adminForm.value;
-      console.log('Usuario Administrador creado:', adminData);
-      // Puedes redirigir o hacer algo con adminData aquí
+      const adminData = this.adminForm.value;
+
+      const usuarioAdministrador: UsuarioAdministrador = {
+        nombre: adminData.nombre,
+        modo: adminData.modo,
+        avatarUrl: this.avatarService.generarAvatarAleatorio() 
+      };
+
+      localStorage.setItem('usuarioAdministrador', JSON.stringify(usuarioAdministrador));
+      this.router.navigate(['/mesa-votacion']);
     } else {
       this.adminForm.markAllAsTouched();
     }
@@ -56,5 +66,6 @@ export class CrearUsuarioAdministradorComponent {
 
 interface UsuarioAdministrador {
   nombre: string;
-  modo: 'jugador' | 'espectador';
+  modo: string;
+  avatarUrl: string;
 }

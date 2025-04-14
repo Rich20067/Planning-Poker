@@ -1,0 +1,33 @@
+<div class="fondo-translucido">
+  <h1>Mesa de Votación</h1>
+  <h2>Partida: {{ nombrePartida }}</h2>
+
+  <div class="mesa-scroll">
+    <div class="mesa">
+      <div 
+        *ngFor="let jugador of jugadores" 
+        class="jugador" 
+        [ngClass]="{ 'espectador': jugador.modo === 'espectador' }"
+      >
+        <img class="avatar" [src]="jugador.avatar || 'assets/default-avatar.png'" alt="Avatar" />
+        <div class="nombre">{{ jugador.nombre }}</div>
+        <div class="carta" [ngClass]="{ 'oculta': !jugador.carta, 'espectador-carta': jugador.modo === 'espectador' }">
+          <ng-container *ngIf="jugador.carta; else sinCarta">
+            {{ jugador.carta }}
+          </ng-container>
+          <ng-template #sinCarta>
+            <span class="icono-oculto">🙈</span>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>    
+
+  <button 
+    *ngIf="usuarioAdministrador?.modo === 'jugador'" 
+    class="boton-next" 
+    (click)="siguienteRonda()"
+  >
+    NEXT ROUND →
+  </button>
+</div>
