@@ -1,0 +1,32 @@
+.mensaje-error {
+  color: #ff5a5a;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.cartas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.carta {
+  padding: 12px 18px;
+  font-size: 1.2em;
+  border-radius: 8px;
+  border: none;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.carta:hover {
+  background-color: #dcdcdc;
+}
+
+.carta.seleccionada {
+  background-color: #9bc1ff;
+  font-weight: bold;
+}

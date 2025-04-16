@@ -4,9 +4,10 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AvatarService {
+  private totalAvatares = 10;
+
   generarAvatarAleatorio(): string {
-    const totalAvatares = 10;
-    const numero = Math.floor(Math.random() * totalAvatares) + 1;
+    const numero = Math.floor(Math.random() * this.totalAvatares) + 1;
     return `assets/avatars/logo${numero}.jpg`;
   }
 }

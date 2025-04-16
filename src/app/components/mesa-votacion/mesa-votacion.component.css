@@ -112,3 +112,38 @@
   background: linear-gradient(45deg, #21cbf3, #2196f3);
   transform: scale(1.05);
 }
+.resultados {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  margin-top: 30px;
+  color: #fff;
+  text-align: left;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.resultados h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #ffcc00;
+}
+
+.resultados ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.resultados li {
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+}
+
+.resultados p {
+  margin-top: 15px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #00ffcc;
+}

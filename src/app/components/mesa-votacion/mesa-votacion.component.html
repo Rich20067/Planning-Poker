@@ -9,20 +9,38 @@
         class="jugador" 
         [ngClass]="{ 'espectador': jugador.modo === 'espectador' }"
       >
-        <img class="avatar" [src]="jugador.avatar || 'assets/default-avatar.png'" alt="Avatar" />
+        <img 
+          class="avatar" 
+          [src]="jugador.avatarUrl || 'assets/avatars/logo1.jpg'" 
+          alt="Avatar"
+          (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'"
+        />
+
         <div class="nombre">{{ jugador.nombre }}</div>
-        <div class="carta" [ngClass]="{ 'oculta': !jugador.carta, 'espectador-carta': jugador.modo === 'espectador' }">
-          <ng-container *ngIf="jugador.carta; else sinCarta">
-            {{ jugador.carta }}
+
+        <div 
+          class="carta" 
+          [ngClass]="{ 'oculta': !jugador.carta, 'espectador-carta': jugador.modo === 'espectador' }"
+        >
+          <ng-container *ngIf="cartasReveladas || jugador.modo === 'espectador'; else cartaOculta">
+            <span *ngIf="jugador.modo !== 'espectador'; else cartaEspectador">
+              {{ jugador.carta ?? '—' }}
+            </span>
           </ng-container>
-          <ng-template #sinCarta>
+
+          <ng-template #cartaOculta>
             <span class="icono-oculto">🙈</span>
+          </ng-template>
+
+          <ng-template #cartaEspectador>
+            <span class="modo-espectador">🎥</span>
           </ng-template>
         </div>
       </div>
     </div>
   </div>    
 
+  <!-- Botón siguiente ronda -->
   <button 
     *ngIf="usuarioAdministrador?.modo === 'jugador'" 
     class="boton-next" 
@@ -30,4 +48,36 @@
   >
     NEXT ROUND →
   </button>
+  
+  <!-- Botón revelar cartas -->
+  <button
+    *ngIf="usuarioAdministrador?.modo === 'jugador'"
+    class="boton-revelar"
+    (click)="revelarCartas()"
+  >
+    REVELAR CARTAS 👀
+  </button>
+
+  <!-- Componente elegir carta (solo jugadores) -->
+  <app-elegir-carta 
+    *ngIf="usuarioAdministrador?.modo === 'jugador'" 
+    [cartas]="cartasDisponibles"
+    (cartaSeleccionadaEvent)="cargarJugadores()"
+  ></app-elegir-carta>
+
+  <!-- Mensaje para espectadores -->
+  <div *ngIf="usuarioAdministrador?.modo === 'espectador'" class="mensaje-error">
+    Estás en modo espectador. No puedes elegir cartas.
+  </div>
+
+  <!-- Resultados cuando las cartas están reveladas -->
+  <div *ngIf="cartasReveladas" class="resultados">
+    <h3>Resultados:</h3>
+    <ul>
+      <li *ngFor="let carta of cartasDisponibles">
+        Carta {{ carta }}: {{ votosPorCarta[carta] || 0 }} voto(s)
+      </li>
+    </ul>
+    <p><strong>Promedio:</strong> {{ promedioVotos }}</p>
+  </div>
 </div>

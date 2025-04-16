@@ -1,0 +1,22 @@
+<div class="contenedor" *ngIf="esJugador(); else noJugador">
+  <h3>Elige una carta</h3>
+
+  <div *ngIf="cartas.length === 0" class="mensaje-error">
+    No hay cartas registradas 😢
+  </div>
+
+  <div class="cartas" *ngIf="cartas.length > 0">
+    <button 
+      class="carta" 
+      *ngFor="let carta of cartas" 
+      (click)="elegirCarta(carta)"
+      [class.seleccionada]="cartaSeleccionada === carta"
+    >
+      {{ carta }}
+    </button>
+  </div>
+</div>
+
+<ng-template #noJugador>
+  <p class="mensaje-error">Modo espectador: no puedes elegir carta.</p>
+</ng-template>

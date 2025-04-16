@@ -1,86 +1,192 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Jugador {
-  nombre: string;
-  carta?: string;
-  modo: 'jugador' | 'espectador';
-  avatar?: string;
-}
-
-interface UsuarioAdministrador {
-  nombre: string;
-  modo: 'jugador' | 'espectador';
-  avatarUrl?: string;
-}
+import { Router } from '@angular/router';
+import { ElegirCartaComponent } from '../elegir-carta/elegir-carta.component';
+import { AvatarService } from '../../services/avatar.service';
 
 @Component({
   selector: 'app-mesa-votacion',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ElegirCartaComponent],
   templateUrl: './mesa-votacion.component.html',
   styleUrls: ['./mesa-votacion.component.css']
 })
 export class MesaVotacionComponent implements OnInit {
-  jugadores: Jugador[] = [];
-  usuarioAdministrador: UsuarioAdministrador | null = null;
   nombrePartida: string = '';
+  jugadores: any[] = [];
+  usuarioAdministrador: any;
+  cartasDisponibles: number[] = [];
+  cartasReveladas: boolean = false;
+  votosPorCarta: { [carta: number]: number } = {};
+  promedioVotos: number = 0;
+
+  constructor(
+    private router: Router,
+    private avatarService: AvatarService
+  ) {}
 
   ngOnInit(): void {
-    const adminData = localStorage.getItem('usuarioAdministrador');
-    const jugadoresData = localStorage.getItem('jugadores');
-    const partida = localStorage.getItem('nombrePartida');
+    this.nombrePartida = localStorage.getItem('nombrePartida') || '';
+    this.usuarioAdministrador = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
 
-    // Cargar datos del admin
-    if (adminData) {
-      const parsedAdmin: UsuarioAdministrador = JSON.parse(adminData);
+    const cartasGuardadas = localStorage.getItem('poolCartas');
+    this.cartasDisponibles = cartasGuardadas
+      ? JSON.parse(cartasGuardadas)
+      : [1, 2, 3, 5, 8, 13, 21];
 
-      if (!parsedAdmin.avatarUrl) {
-        parsedAdmin.avatarUrl = this.generarAvatarAleatorio();
-        localStorage.setItem('usuarioAdministrador', JSON.stringify(parsedAdmin));
-      }
+    this.cargarJugadores();
+  }
 
-      this.usuarioAdministrador = parsedAdmin;
+  cargarJugadores(): void {
+    this.usuarioAdministrador = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
 
-      const adminNombre = `${parsedAdmin.nombre} (Admin)`;
-
-      this.jugadores.push({
-        nombre: adminNombre,
-        modo: parsedAdmin.modo,
-        avatar: parsedAdmin.avatarUrl,
-        carta: ''
-      });
+    if (!this.usuarioAdministrador.avatarUrl) {
+      this.usuarioAdministrador.avatarUrl = this.avatarService.generarAvatarAleatorio();
+      localStorage.setItem('usuarioAdministrador', JSON.stringify(this.usuarioAdministrador));
     }
 
-    if (jugadoresData) {
-      const jugadoresCargados: Jugador[] = JSON.parse(jugadoresData);
-      const adminNombreBase = this.usuarioAdministrador?.nombre || '';
+    const jugadoresAlmacenados = JSON.parse(localStorage.getItem('jugadores') || '[]');
+    this.jugadores = [this.usuarioAdministrador, ...jugadoresAlmacenados];
 
-      this.jugadores.push(...jugadoresCargados
-        .filter(j => j.nombre !== adminNombreBase && j.nombre !== `${adminNombreBase} (Admin)`)
-        .map(j => ({
-          ...j,
-          carta: j.carta || '',
-          avatar: j.avatar || this.generarAvatarAleatorio()
-        }))
-      );
-    }
-
-    if (partida) {
-      this.nombrePartida = partida;
+    if (this.cartasReveladas) {
+      this.contarVotos();
+      this.calcularPromedio();
     }
   }
 
   siguienteRonda(): void {
-    this.jugadores = this.jugadores.map(j => ({ ...j, carta: '' }));
-    localStorage.setItem('jugadores', JSON.stringify(
-      this.jugadores.filter(j => !j.nombre.includes('(Admin)'))
-    ));
+    const usuario = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
+
+    if (usuario) {
+      usuario.carta = null;
+      usuario.cartaSeleccionada = false;
+      localStorage.setItem('usuarioAdministrador', JSON.stringify(usuario));
+    }
+
+    this.cartasReveladas = false;
+    this.votosPorCarta = {};
+    this.promedioVotos = 0;
+    this.cargarJugadores();
   }
 
-  private generarAvatarAleatorio(): string {
-    const totalAvatares = 10;
-    const numeroAleatorio = Math.floor(Math.random() * totalAvatares) + 1;
-    return `assets/avatars/logo${numeroAleatorio}.jpg`;
+  revelarCartas(): void {
+    this.cartasReveladas = true;
+    this.contarVotos();
+    this.calcularPromedio();
+  }
+
+  contarVotos(): void {
+    this.votosPorCarta = {};
+
+    this.jugadores.forEach(j => {
+      if (j.modo !== 'espectador' && j.carta !== null && j.carta !== undefined) {
+        this.votosPorCarta[j.carta] = (this.votosPorCarta[j.carta] || 0) + 1;
+      }
+    });
+  }
+
+  calcularPromedio(): void {
+    const votosNumericos = this.jugadores
+      .filter(j => j.modo !== 'espectador' && typeof j.carta === 'number')
+      .map(j => j.carta);
+
+    const total = votosNumericos.reduce((a, b) => a + b, 0);
+    this.promedioVotos = votosNumericos.length ? Math.round((total / votosNumericos.length) * 100) / 100 : 0;
+  }
+}
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { ElegirCartaComponent } from '../elegir-carta/elegir-carta.component';
+import { AvatarService } from '../../services/avatar.service';
+
+@Component({
+  selector: 'app-mesa-votacion',
+  standalone: true,
+  imports: [CommonModule, ElegirCartaComponent],
+  templateUrl: './mesa-votacion.component.html',
+  styleUrls: ['./mesa-votacion.component.css']
+})
+export class MesaVotacionComponent implements OnInit {
+  nombrePartida: string = '';
+  jugadores: any[] = [];
+  usuarioAdministrador: any;
+  cartasDisponibles: number[] = [];
+  cartasReveladas: boolean = false;
+  votosPorCarta: { [carta: number]: number } = {};
+  promedioVotos: number = 0;
+
+  constructor(
+    private router: Router,
+    private avatarService: AvatarService
+  ) {}
+
+  ngOnInit(): void {
+    this.nombrePartida = localStorage.getItem('nombrePartida') || '';
+    this.usuarioAdministrador = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
+
+    const cartasGuardadas = localStorage.getItem('poolCartas');
+    this.cartasDisponibles = cartasGuardadas
+      ? JSON.parse(cartasGuardadas)
+      : [1, 2, 3, 5, 8, 13, 21];
+
+    this.cargarJugadores();
+  }
+
+  cargarJugadores(): void {
+    this.usuarioAdministrador = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
+
+    if (!this.usuarioAdministrador.avatarUrl) {
+      this.usuarioAdministrador.avatarUrl = this.avatarService.generarAvatarAleatorio();
+      localStorage.setItem('usuarioAdministrador', JSON.stringify(this.usuarioAdministrador));
+    }
+
+    const jugadoresAlmacenados = JSON.parse(localStorage.getItem('jugadores') || '[]');
+    this.jugadores = [this.usuarioAdministrador, ...jugadoresAlmacenados];
+
+    if (this.cartasReveladas) {
+      this.contarVotos();
+      this.calcularPromedio();
+    }
+  }
+
+  siguienteRonda(): void {
+    const usuario = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
+
+    if (usuario) {
+      usuario.carta = null;
+      usuario.cartaSeleccionada = false;
+      localStorage.setItem('usuarioAdministrador', JSON.stringify(usuario));
+    }
+
+    this.cartasReveladas = false;
+    this.votosPorCarta = {};
+    this.promedioVotos = 0;
+    this.cargarJugadores();
+  }
+
+  revelarCartas(): void {
+    this.cartasReveladas = true;
+    this.contarVotos();
+    this.calcularPromedio();
+  }
+
+  contarVotos(): void {
+    this.votosPorCarta = {};
+
+    this.jugadores.forEach(j => {
+      if (j.modo !== 'espectador' && j.carta !== null && j.carta !== undefined) {
+        this.votosPorCarta[j.carta] = (this.votosPorCarta[j.carta] || 0) + 1;
+      }
+    });
+  }
+
+  calcularPromedio(): void {
+    const votosNumericos = this.jugadores
+      .filter(j => j.modo !== 'espectador' && typeof j.carta === 'number')
+      .map(j => j.carta);
+
+    const total = votosNumericos.reduce((a, b) => a + b, 0);
+    this.promedioVotos = votosNumericos.length ? Math.round((total / votosNumericos.length) * 100) / 100 : 0;
   }
 }

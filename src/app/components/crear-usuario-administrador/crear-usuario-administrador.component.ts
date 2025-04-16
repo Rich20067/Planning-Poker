@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { AvatarService } from '../../services/avatar.service'; 
+
 @Component({
   selector: 'app-crear-usuario-administrador',
   standalone: true,
@@ -53,10 +54,12 @@ export class CrearUsuarioAdministradorComponent {
       const usuarioAdministrador: UsuarioAdministrador = {
         nombre: adminData.nombre,
         modo: adminData.modo,
-        avatarUrl: this.avatarService.generarAvatarAleatorio() 
+        avatarUrl: this.avatarService.generarAvatarAleatorio()
       };
 
+      // Guardar usando la propiedad correcta: modo (no modoVisualizacion)
       localStorage.setItem('usuarioAdministrador', JSON.stringify(usuarioAdministrador));
+
       this.router.navigate(['/mesa-votacion']);
     } else {
       this.adminForm.markAllAsTouched();
