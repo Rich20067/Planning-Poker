@@ -1,10 +1,10 @@
 <div class="fondo">
   <div class="burbujeo"></div>
 
+  <!-- Mostrar el nombre de la partida que viene de localStorage -->
   <div class="nombre-partida-header">
     Partida: <strong>{{ nombrePartida || 'Sin nombre' }}</strong>
   </div>
-
 
   <div class="crear-partida-card">
     <h2 class="titulo">🗿 Crear Usuario Administrador</h2>
@@ -30,7 +30,6 @@
           <option value="jugador">Jugador</option>
           <option value="espectador">Espectador</option>
         </select>
-
 
         <div class="error" *ngIf="modo?.touched && modo?.invalid">
           <div *ngIf="modo?.errors?.['required']">El modo es obligatorio.</div>

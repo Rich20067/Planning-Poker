@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { AvatarService } from '../../services/avatar.service'; 
+import { AvatarService } from '../../services/avatar.service';
 
 @Component({
   selector: 'app-crear-usuario-administrador',
@@ -18,16 +18,16 @@ export class CrearUsuarioAdministradorComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private avatarService: AvatarService 
+    private avatarService: AvatarService
   ) {
     this.adminForm = this.fb.group({
       nombre: [
         '',
         [
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(20),
-          Validators.pattern(/^(?!\d+$)(?=(?:\D*\d){0,3}\D*$)[a-zA-Z0-9]+$/)
+        Validators.required,
+        Validators.minLength(5),
+        Validators.maxLength(20),
+        Validators.pattern(/^(?!\d+$)(?!.*[_.\-*/#])(?=(?:[^0-9]*[0-9]){0,3}[^0-9]*$)[A-Za-z0-9 ]+$/)
         ]
       ],
       modo: ['', Validators.required]
@@ -54,13 +54,18 @@ export class CrearUsuarioAdministradorComponent {
       const usuarioAdministrador: UsuarioAdministrador = {
         nombre: adminData.nombre,
         modo: adminData.modo,
-        avatarUrl: this.avatarService.generarAvatarAleatorio()
+        avatarUrl: this.avatarService.generarAvatarAleatorio(),
+        carta: null,
+        cartaSeleccionada: false
       };
 
-      // Guardar usando la propiedad correcta: modo (no modoVisualizacion)
+      // Guardar en localStorage
       localStorage.setItem('usuarioAdministrador', JSON.stringify(usuarioAdministrador));
 
-      this.router.navigate(['/mesa-votacion']);
+      // Redirigir a la mesa con el nombre de la partida (sin invitado=true)
+      this.router.navigate(['/mesa-votacion'], {
+        queryParams: { nombrePartida: this.nombrePartida }
+      });
     } else {
       this.adminForm.markAllAsTouched();
     }
@@ -69,6 +74,8 @@ export class CrearUsuarioAdministradorComponent {
 
 interface UsuarioAdministrador {
   nombre: string;
-  modo: string;
+  modo: 'jugador' | 'espectador';
   avatarUrl: string;
+  carta: number | null;
+  cartaSeleccionada: boolean;
 }

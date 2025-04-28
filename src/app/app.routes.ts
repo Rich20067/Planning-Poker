@@ -17,6 +17,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/mesa-votacion/mesa-votacion.component')
         .then(m => m.MesaVotacionComponent)
+  },
+  {
+    path: 'unirse/:id',
+    loadComponent: () => import('./components/unirse-partida/unirse-partida.component').then(m => m.UnirsePartidaComponent)
   }
   
 ];

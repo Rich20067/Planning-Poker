@@ -1,0 +1,26 @@
+<div class="fondo-translucido">
+  <h2>Unirse a la partida</h2>
+<div class="unirse-form">
+  
+    <form [formGroup]="form" (ngSubmit)="unirse()">
+      <div>
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" />
+        <div *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+          <small *ngIf="form.get('nombre')?.errors?.['required']">El nombre es obligatorio.</small>
+          <small *ngIf="form.get('nombre')?.errors?.['minlength']">Mínimo 5 caracteres.</small>
+          <small *ngIf="form.get('nombre')?.errors?.['maxlength']">Máximo 20 caracteres.</small>
+        </div>
+      </div>
+  
+      <div>
+        <label for="modo">Modo</label>
+        <select id="modo" formControlName="modo">
+          <option value="jugador">Jugador</option>
+          <option value="espectador">Espectador</option>
+        </select>
+      </div>
+  
+      <button type="submit" [disabled]="form.invalid">Unirse</button>
+    </form>
+  </div>

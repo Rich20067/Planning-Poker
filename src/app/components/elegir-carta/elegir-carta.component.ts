@@ -1,4 +1,4 @@
-import { Component, Input, DoCheck } from '@angular/core';
+import { Component, Input, Output, EventEmitter, DoCheck } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -10,24 +10,29 @@ import { CommonModule } from '@angular/common';
 })
 export class ElegirCartaComponent implements DoCheck {
   @Input() cartas: number[] = [];
+  @Output() cartaSeleccionadaEvent = new EventEmitter<void>();
+
   cartaSeleccionada: number | null = null;
   modo: string = '';
 
   ngDoCheck(): void {
     const usuario = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
-    this.modo = usuario.modo;
+    this.modo = usuario?.modo || '';
   }
 
-  elegirCarta(carta: number) {
+  elegirCarta(carta: number): void {
     const usuario = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
 
-    if (usuario.modo !== 'jugador') return;
+    if (!usuario || usuario.modo !== 'jugador') {
+      return;
+    }
 
     usuario.carta = carta;
     usuario.cartaSeleccionada = true;
     localStorage.setItem('usuarioAdministrador', JSON.stringify(usuario));
 
     this.cartaSeleccionada = carta;
+    this.cartaSeleccionadaEvent.emit();
   }
 
   esJugador(): boolean {
