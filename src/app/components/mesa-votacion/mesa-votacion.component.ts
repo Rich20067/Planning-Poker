@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ElegirCartaComponent } from '../elegir-carta/elegir-carta.component';
@@ -14,10 +13,11 @@ import { UnirsePartidaComponent } from '../unirse-partida/unirse-partida.compone
   templateUrl: './mesa-votacion.component.html',
   styleUrls: ['./mesa-votacion.component.css']
 })
-export class MesaVotacionComponent implements OnInit {
+export class MesaVotacionComponent implements OnInit, OnDestroy {
   nombrePartida: string = '';
   jugadores: any[] = [];
   usuarioAdministrador: any;
+  usuarioActual: any;
   cartasDisponibles: number[] = [];
   cartasReveladas: boolean = false;
   votosPorCarta: { [carta: number]: number } = {};
@@ -25,6 +25,8 @@ export class MesaVotacionComponent implements OnInit {
   cartasConVotos: number[] = [];
   mostrarUnirseOverlay = false;
   linkDeInvitacion: string = '';
+  esAdministrador: boolean = false;
+  esEspectador: boolean = false; // Nueva propiedad para identificar si es espectador
 
   constructor(
     private router: Router,
@@ -35,7 +37,7 @@ export class MesaVotacionComponent implements OnInit {
 
   ngOnInit(): void {
     this.cartasDisponibles = this.obtenerCartasDesdeLocalStorage();
-    
+  
     this.route.queryParams.subscribe(params => {
       const esInvitado = params['invitado'] === 'true';
       const nombrePartidaParam = params['nombrePartida'];
@@ -46,20 +48,46 @@ export class MesaVotacionComponent implements OnInit {
       } else {
         this.nombrePartida = localStorage.getItem('nombrePartida') || '';
       }
-
+  
       this.linkDeInvitacion = this.linkService.generarLink(this.nombrePartida);
-      
+  
       const storageKey = `jugadores_${this.nombrePartida}`;
       const jugadoresPartida = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      const usuarioAdmin = localStorage.getItem('usuarioAdministrador');
-      const adminGuardado = localStorage.getItem(`usuarioAdministrador_${this.nombrePartida}`);
-
-      if (esInvitado || (!usuarioAdmin && jugadoresPartida.length === 0)) {
+  
+      const usuarioAdminGuardado = localStorage.getItem('usuarioAdministrador');
+      this.usuarioAdministrador = usuarioAdminGuardado ? JSON.parse(usuarioAdminGuardado) : null;
+  
+      const usuarioActualGuardado = localStorage.getItem('usuarioActual');
+      this.usuarioActual = usuarioActualGuardado ? JSON.parse(usuarioActualGuardado) : null;
+  
+      // 🔥 Determinar si el usuario actual es el administrador
+      this.esAdministrador = !!(this.usuarioAdministrador && this.usuarioActual && this.usuarioAdministrador.nombre === this.usuarioActual.nombre);
+  
+      // 🔥 Determinar si el usuario actual es espectador
+      this.esEspectador = this.usuarioActual?.modo === 'espectador';
+  
+      // 🔥 Si es el administrador (modo jugador o modo espectador), podrá ver los botones
+      // (Nada más hay que usar en HTML: *ngIf="esAdministrador")
+  
+      if (esInvitado || (!usuarioAdminGuardado && jugadoresPartida.length === 0)) {
         this.mostrarUnirseOverlay = true;
       } else {
         this.cargarJugadores();
+         
+  if (this.esEspectador) {
+    this.cartasReveladas = true; // Los espectadores verán las cartas reveladas, pero no podrán elegir cartas
+  }
       }
+      
+  
+      this.cartasReveladas = localStorage.getItem('cartasReveladas') === 'true';
     });
+  
+    window.addEventListener('storage', this.onStorageChange.bind(this));
+  }
+  
+  ngOnDestroy(): void {
+    window.removeEventListener('storage', this.onStorageChange.bind(this));
   }
 
   obtenerCartasDesdeLocalStorage(): number[] {
@@ -68,28 +96,25 @@ export class MesaVotacionComponent implements OnInit {
   }
 
   cargarJugadores(): void {
-    this.usuarioAdministrador = this.obtenerUsuarioAdministrador();
-  
     const storageKey = `jugadores_${this.nombrePartida}`;
     const jugadoresAlmacenados = JSON.parse(localStorage.getItem(storageKey) || '[]');
-  
+
     const jugadoresConAvatares = jugadoresAlmacenados.map((jugador: any) => {
       if (!jugador.avatarUrl) {
         jugador.avatarUrl = this.avatarService.generarAvatarAleatorio();
       }
       return jugador;
     });
-  
-    this.jugadores = [this.usuarioAdministrador, ...jugadoresConAvatares];
-  
+
+    // ⚡️ Incluir también al administrador en la lista
+    this.jugadores = [
+      ...(this.usuarioAdministrador ? [this.usuarioAdministrador] : []),
+      ...jugadoresConAvatares
+    ];
+
     this.contarVotos();
     this.calcularPromedio();
     this.actualizarCartasConVotos();
-  }
-
-  obtenerUsuarioAdministrador(): any {
-    const adminGuardado = localStorage.getItem('usuarioAdministrador');
-    return adminGuardado ? JSON.parse(adminGuardado) : null;
   }
 
   contarVotos(): void {
@@ -122,30 +147,41 @@ export class MesaVotacionComponent implements OnInit {
   }
 
   revelarCartas(): void {
-    this.cartasReveladas = true;
-    this.contarVotos();
-    this.calcularPromedio();
-    this.actualizarCartasConVotos();
+    if (this.esAdministrador || this.esEspectador) { // Mostrar opción tanto en jugador como en espectador
+      this.cartasReveladas = true;
+      localStorage.setItem('cartasReveladas', 'true');
+      this.contarVotos();
+      this.calcularPromedio();
+      this.actualizarCartasConVotos();
+    }
   }
 
   cerrarRevelacion(): void {
-    this.cartasReveladas = false;
+    if (this.esAdministrador || this.esEspectador) { // Mostrar opción tanto en jugador como en espectador
+      this.cartasReveladas = false;
+      localStorage.removeItem('cartasReveladas');
+    }
   }
 
   siguienteRonda(): void {
-    const storageKey = `jugadores_${this.nombrePartida}`;
-    const jugadores = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    if (this.esAdministrador || this.esEspectador) { // Mostrar opción tanto en jugador como en espectador
+      const storageKey = `jugadores_${this.nombrePartida}`;
+      const jugadores = JSON.parse(localStorage.getItem(storageKey) || '[]');
 
-    jugadores.forEach((jugador: any) => {
-      jugador.carta = null;
-    });
+      jugadores.forEach((jugador: any) => {
+        jugador.carta = null;
+      });
 
-    localStorage.setItem(storageKey, JSON.stringify(jugadores));
-    this.usuarioAdministrador.carta = null;
-    localStorage.setItem('usuarioAdministrador', JSON.stringify(this.usuarioAdministrador));
+      localStorage.setItem(storageKey, JSON.stringify(jugadores));
+      if (this.usuarioAdministrador) {
+        this.usuarioAdministrador.carta = null;
+        localStorage.setItem('usuarioAdministrador', JSON.stringify(this.usuarioAdministrador));
+      }
 
-    this.cartasReveladas = false;
-    this.cargarJugadores();
+      this.cartasReveladas = false;
+      localStorage.removeItem('cartasReveladas');
+      this.cargarJugadores();
+    }
   }
 
   copiarAlPortapapeles(): void {
@@ -154,8 +190,15 @@ export class MesaVotacionComponent implements OnInit {
     });
   }
 
-  cerrarOverlay() {
+  cerrarOverlay(): void {
     this.mostrarUnirseOverlay = false;
-    this.cargarJugadores(); // Recargamos los jugadores en la mesa
+    this.cargarJugadores();
+  }
+
+  private onStorageChange(event: StorageEvent): void {
+    if (event.key?.startsWith('jugadores_') || event.key === 'usuarioAdministrador' || event.key === 'cartasReveladas') {
+      this.cargarJugadores();
+      this.cartasReveladas = localStorage.getItem('cartasReveladas') === 'true';
+    }
   }
 }

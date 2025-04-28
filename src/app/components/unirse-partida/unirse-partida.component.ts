@@ -17,6 +17,7 @@ export class UnirsePartidaComponent implements OnInit {
   nombrePartida: string = '';
   esInvitado: boolean = false;
   form: FormGroup;
+  esEspectador: boolean = false; // Nueva propiedad para determinar si es espectador.
 
   constructor(
     private route: ActivatedRoute,
@@ -32,27 +33,47 @@ export class UnirsePartidaComponent implements OnInit {
   ngOnInit(): void {
     this.nombrePartida = this.route.snapshot.queryParamMap.get('nombrePartida') || '';
     this.esInvitado = this.route.snapshot.queryParamMap.get('invitado') === 'true';
+
+    // Verificar si el jugador es espectador, si lo es, cambiar el modo.
+    if (this.esInvitado) {
+      this.esEspectador = true;
+      this.form.patchValue({
+        modo: 'espectador'
+      });
+    }
   }
 
   unirse(): void {
-    if (this.form.invalid || !this.nombrePartida) {
-      return;
-    }
+    if (this.form.invalid || !this.nombrePartida) return;
 
     const nuevoJugador = {
       nombre: this.form.value.nombre,
-      modo: this.form.value.modo, // 'jugador' o 'espectador'
+      modo: this.form.value.modo,
       idPartida: this.nombrePartida,
       avatarUrl: this.avatarService.generarAvatarAleatorio(),
       carta: null,
-      rol: this.form.value.modo === 'jugador' ? 'jugador' : 'espectador' // Aquí aseguramos que el rol esté bien asignado
+      cartaSeleccionada: false
     };
 
     const storageKey = `jugadores_${this.nombrePartida}`;
     const jugadores = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+    // Si el jugador es el administrador, asignamos el rol de administrador correctamente.
+    if (nuevoJugador.modo === 'espectador' && jugadores.length === 0) {
+      // Si no hay jugadores, el primer espectador será el administrador.
+      nuevoJugador.modo = 'administrador';
+    }
+
     jugadores.push(nuevoJugador);
     localStorage.setItem(storageKey, JSON.stringify(jugadores));
 
-    this.cerrar.emit(); // Solo cierra el formulario flotante
+    // Guardar al administrador como el jugador actual.
+    if (nuevoJugador.modo === 'administrador') {
+      localStorage.setItem('usuarioAdministrador', JSON.stringify(nuevoJugador));
+    } else {
+      localStorage.setItem('usuarioActual', JSON.stringify(nuevoJugador));
+    }
+
+    this.cerrar.emit(); // cierra overlay y fuerza carga de mesa
   }
 }

@@ -16,12 +16,13 @@ export class ElegirCartaComponent implements DoCheck {
   modo: string = '';
 
   ngDoCheck(): void {
-    const usuario = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
+    const usuario = this.obtenerUsuarioDesdeLocalStorage();
     this.modo = usuario?.modo || '';
+    this.cartaSeleccionada = usuario?.carta ?? null;
   }
 
   elegirCarta(carta: number): void {
-    const usuario = JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
+    const usuario = this.obtenerUsuarioDesdeLocalStorage();
 
     if (!usuario || usuario.modo !== 'jugador') {
       return;
@@ -31,11 +32,24 @@ export class ElegirCartaComponent implements DoCheck {
     usuario.cartaSeleccionada = true;
     localStorage.setItem('usuarioAdministrador', JSON.stringify(usuario));
 
+    // Emite evento local y simula un cambio en el almacenamiento para otras pestañas
     this.cartaSeleccionada = carta;
     this.cartaSeleccionadaEvent.emit();
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'usuarioAdministrador',
+      newValue: JSON.stringify(usuario)
+    }));
   }
 
   esJugador(): boolean {
     return this.modo === 'jugador';
+  }
+
+  private obtenerUsuarioDesdeLocalStorage(): any {
+    try {
+      return JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
+    } catch {
+      return {};
+    }
   }
 }
