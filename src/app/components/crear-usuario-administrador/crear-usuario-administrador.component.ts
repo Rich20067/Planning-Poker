@@ -24,13 +24,13 @@ export class CrearUsuarioAdministradorComponent {
       nombre: [
         '',
         [
-        Validators.required,
-        Validators.minLength(5),
-        Validators.maxLength(20),
-        Validators.pattern(/^(?!\d+$)(?!.*[_.\-*/#])(?=(?:[^0-9]*[0-9]){0,3}[^0-9]*$)[A-Za-z0-9 ]+$/)
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(20),
+          Validators.pattern(/^(?!\d+$)(?!.*[_.\-*/#])(?=(?:[^0-9]*[0-9]){0,3}[^0-9]*$)[A-Za-z0-9 ]+$/)
         ]
       ],
-      modo: ['', Validators.required]
+      modo: ['jugador', Validators.required] // Modo por defecto
     });
 
     const nombreGuardado = localStorage.getItem('nombrePartida');
@@ -59,10 +59,26 @@ export class CrearUsuarioAdministradorComponent {
         cartaSeleccionada: false
       };
 
-      // Guardar en localStorage
-      localStorage.setItem('usuarioAdministrador', JSON.stringify(usuarioAdministrador));
+      // Guardar como administrador y usuario actual
+      const adminJson = JSON.stringify(usuarioAdministrador);
+      localStorage.setItem('usuarioAdministrador', adminJson);
+      localStorage.setItem('usuarioActual', adminJson);
+      localStorage.setItem(`usuario_${usuarioAdministrador.nombre}`, adminJson);
+      
+      // Clave necesaria para cambio de modo
+      localStorage.setItem(`usuario_${usuarioAdministrador.nombre}`, JSON.stringify(usuarioAdministrador));
 
-      // Redirigir a la mesa con el nombre de la partida (sin invitado=true)
+      // Agregar a la lista de jugadores sin duplicar
+      const storageKey = `jugadores_${this.nombrePartida}`;
+      const jugadores: UsuarioAdministrador[] = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const yaExiste = jugadores.some((j: UsuarioAdministrador) => j.nombre === usuarioAdministrador.nombre);
+      if (!yaExiste) {
+        jugadores.push(usuarioAdministrador);
+      }
+
+      localStorage.setItem(storageKey, JSON.stringify(jugadores));
+
+      // Redirigir a la mesa sin "invitado=true"
       this.router.navigate(['/mesa-votacion'], {
         queryParams: { nombrePartida: this.nombrePartida }
       });

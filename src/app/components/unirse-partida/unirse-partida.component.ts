@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { AvatarService } from '../../services/avatar.service';
 
@@ -15,38 +15,32 @@ export class UnirsePartidaComponent implements OnInit {
   @Output() cerrar = new EventEmitter<void>();
 
   nombrePartida: string = '';
-  esInvitado: boolean = false;
   form: FormGroup;
-  esEspectador: boolean = false; // Nueva propiedad para determinar si es espectador.
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router, // ✅ agregado para redirigir
     private fb: FormBuilder,
     private avatarService: AvatarService
   ) {
     this.form = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
-      modo: ['jugador', Validators.required]
+      modo: ['jugador', Validators.required] // por defecto jugador
     });
   }
 
   ngOnInit(): void {
     this.nombrePartida = this.route.snapshot.queryParamMap.get('nombrePartida') || '';
-    this.esInvitado = this.route.snapshot.queryParamMap.get('invitado') === 'true';
-
-    // Verificar si el jugador es espectador, si lo es, cambiar el modo.
-    if (this.esInvitado) {
-      this.esEspectador = true;
-      this.form.patchValue({
-        modo: 'espectador'
-      });
-    }
   }
 
   unirse(): void {
     if (this.form.invalid || !this.nombrePartida) return;
 
+    const storageKey = `jugadores_${this.nombrePartida}`;
+    const jugadores = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
     const nuevoJugador = {
+      idUsuario: Date.now(),
       nombre: this.form.value.nombre,
       modo: this.form.value.modo,
       idPartida: this.nombrePartida,
@@ -55,25 +49,29 @@ export class UnirsePartidaComponent implements OnInit {
       cartaSeleccionada: false
     };
 
-    const storageKey = `jugadores_${this.nombrePartida}`;
-    const jugadores = JSON.parse(localStorage.getItem(storageKey) || '[]');
-
-    // Si el jugador es el administrador, asignamos el rol de administrador correctamente.
-    if (nuevoJugador.modo === 'espectador' && jugadores.length === 0) {
-      // Si no hay jugadores, el primer espectador será el administrador.
-      nuevoJugador.modo = 'administrador';
-    }
-
     jugadores.push(nuevoJugador);
     localStorage.setItem(storageKey, JSON.stringify(jugadores));
 
-    // Guardar al administrador como el jugador actual.
-    if (nuevoJugador.modo === 'administrador') {
+    // 🔥 claves esenciales
+    localStorage.setItem(`usuario_${nuevoJugador.nombre}`, JSON.stringify(nuevoJugador));
+    const admin = localStorage.getItem('usuarioAdministrador');
+const adminNombre = admin ? JSON.parse(admin).nombre : '';
+
+if (nuevoJugador.nombre !== adminNombre) {
+  localStorage.setItem('usuarioActual', JSON.stringify(nuevoJugador));
+}
+
+
+    // Si aún no hay admin, este será el primero
+    if (!localStorage.getItem('usuarioAdministrador')) {
       localStorage.setItem('usuarioAdministrador', JSON.stringify(nuevoJugador));
-    } else {
-      localStorage.setItem('usuarioActual', JSON.stringify(nuevoJugador));
     }
 
-    this.cerrar.emit(); // cierra overlay y fuerza carga de mesa
+    this.cerrar.emit();
+
+    // ✅ Redirigir a la mesa sin el query "invitado=true"
+    this.router.navigate(['/mesa-votacion'], {
+      queryParams: { nombrePartida: this.nombrePartida }
+    });
   }
 }

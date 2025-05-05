@@ -1,20 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { PartidaService } from '../../core/services/partida.service';
+import { Injectable } from '@angular/core';
 
-@Component({
-  selector: 'app-lista-jugadores',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './lista-jugadores.component.html',
-  styleUrls: ['./lista-jugadores.component.css']
+@Injectable({
+  providedIn: 'root'
 })
-export class ListaJugadoresComponent implements OnInit {
-  jugadores: string[] = [];
+export class PartidaService {
 
-  constructor(private partidaService: PartidaService) {}
+  obtenerJugadores(): any[] {
+    const nombrePartida = localStorage.getItem('nombrePartida');
+    const jugadores = JSON.parse(localStorage.getItem(`jugadores_${nombrePartida}`) || '[]');
+    return jugadores; // Solo jugadores normales (no administrador aquí)
+  }
 
-  ngOnInit() {
-    this.jugadores = this.partidaService.obtenerJugadores();
+  obtenerAdministrador(): any {
+    return JSON.parse(localStorage.getItem('usuarioAdministrador') || '{}');
+  }
+
+  obtenerUsuarioActual(): any {
+    return JSON.parse(localStorage.getItem('usuarioActual') || '{}');
   }
 }

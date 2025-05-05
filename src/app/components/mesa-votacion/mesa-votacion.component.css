@@ -488,3 +488,181 @@ header {
   font-weight: normal;
   color: #f0e6d2;
 }
+/* Carta cuando sí ha votado */
+/* Carta cuando sí ha votado */
+.carta.rellena {
+  background: linear-gradient(135deg, #21cbf3, #2196f3);
+  color: #fff;
+  border: 2px solid #21cbf3;
+  box-shadow: 0 0 15px rgba(33, 203, 243, 0.5);
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+/* Efecto al pasar el mouse por una carta que ya votó */
+.carta.rellena:hover {
+  background: linear-gradient(135deg, #2196f3, #21cbf3);
+  box-shadow: 0 0 20px rgba(33, 203, 243, 0.7);
+  transform: scale(1.1) rotate(1deg);
+}
+/* Animación de cartas al revelarlas */
+.carta.revelada-animacion {
+  animation: aparecerSalto 0.6s ease forwards;
+}
+
+@keyframes aparecerSalto {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(20px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1) translateY(-5px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+/* Contenedor principal estilo barra oscura */
+.modo-panel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e293b; /* fondo oscuro */
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #f1f5f9;
+  font-family: system-ui, sans-serif;
+  gap: 16px;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Label del select */
+.modo-panel-select label {
+  font-weight: bold;
+  margin-right: 8px;
+  color: #f1f5f9;
+}
+
+/* Contenedor visual con flecha */
+.modo-panel-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Select estilizado */
+.modo-panel-select select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: transparent;
+  font-weight: bold;
+  font-size: 14px;
+  color: #f1f5f9;
+  outline: none;
+  appearance: none;
+  cursor: pointer; /* 👈 ícono de mano */
+  padding-right: 24px; /* espacio para la flecha */
+}
+
+/* Flecha visual en el select */
+.modo-panel-select::after {
+  content: "🔽";
+  position: absolute;
+  right: 8px;
+  pointer-events: none;
+  font-size: 18px;
+  color: #f1f5f9;
+}
+/* Solo se aplica en navegadores que soportan bien estilos en options */
+.modo-panel-select select option:hover {
+  background-color: #334155;
+  font-size: 16px; /* ligeramente más grande */
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Opciones internas del select */
+.modo-panel-select select option {
+  background-color: #1e293b;
+  color: white;
+}
+
+/* Switch visual */
+.modo-panel-switch {
+  display: flex;
+  align-items: center;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 90px;
+  height: 40px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background-color: #475569;
+  transition: 0.4s;
+  border-radius: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  font-weight: bold;
+  color: white;
+  cursor: not-allowed;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 32px;
+  width: 32px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #22c55e;
+}
+
+input:checked + .slider::before {
+  transform: translateX(40px);
+}
+
+.text-on,
+.text-off {
+  font-size: 14px;
+  z-index: 1;
+  transition: opacity 0.3s;
+}
+
+input:checked + .slider .text-on {
+  opacity: 1;
+}
+input:checked + .slider .text-off {
+  opacity: 0;
+}
+input:not(:checked) + .slider .text-on {
+  opacity: 0;
+}
+input:not(:checked) + .slider .text-off {
+  opacity: 1;
+}

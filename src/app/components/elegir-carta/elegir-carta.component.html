@@ -1,4 +1,5 @@
-<div class="contenedor" *ngIf="esJugador(); else noJugador">
+<div class="contenedor" *ngIf="modo === 'jugador'; else noJugador">
+
   <h3>Elige una carta</h3>
 
   <div *ngIf="cartas.length === 0" class="mensaje-error">

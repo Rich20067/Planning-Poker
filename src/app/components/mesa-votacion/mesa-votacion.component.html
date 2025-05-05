@@ -2,7 +2,7 @@
   <app-unirse-partida (cerrar)="cerrarOverlay()"></app-unirse-partida>
 </div>
 
-<div class="fondo-translucido">
+<div class="fondo-translucido" *ngIf="!mostrarUnirseOverlay">
   <div class="acciones">
     <div class="link-invitacion">
       <label>Invitar participantes:</label>
@@ -18,54 +18,154 @@
     </div>
   </header>
 
+  <!-- NUEVA TARJETA DE CAMBIO DE MODO -->
+  <div class="modo-panel">
+    <div class="modo-panel-select">
+      <label for="modo">Modo de visualización:</label>
+      <select id="modo" [(ngModel)]="usuarioActual.modo" (change)="cambiarModo(usuarioActual.modo)">
+        <option value="jugador">🎮 Jugador</option>
+        <option value="espectador">👀 Espectador</option>
+      </select>
+    </div>
+
+    <div class="modo-panel-switch">
+      <label class="switch">
+        <input type="checkbox" [checked]="usuarioActual?.modo === 'jugador'" disabled />
+        <span class="slider">
+          <span class="text-on">🎮</span>
+          <span class="text-off">👀</span>
+        </span>
+      </label>
+    </div>
+  </div>
+
   <section class="mesa-scroll">
-    <div class="jugadores-alrededor">
-      <div *ngFor="let jugador of jugadores" class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
-        <img
-          class="avatar"
-          [src]="jugador.avatarUrl || 'assets/avatars/logo1.jpg'"
-          alt="Avatar de {{ jugador.nombre }}"
-          (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'"
-        />
-        <div class="nombre">{{ jugador.nombre }}</div>
-        <div class="carta"
-             [ngClass]="{
-               'oculta': !jugador.carta && jugador.modo !== 'espectador',
-               'espectador-carta': jugador.modo === 'espectador'
-             }">
-          <ng-container *ngIf="cartasReveladas || jugador.modo === 'espectador'; else cartaOculta">
-            <span *ngIf="jugador.modo !== 'espectador'; else cartaEspectador">{{ jugador.carta ?? '—' }}</span>
+    <div class="mesa-visual">
+      <!-- Fila superior -->
+      <div class="fila fila-superior">
+        <ng-container *ngFor="let jugador of jugadores.slice(0, jugadores.length / 4)">
+          <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
+            <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
+            <div class="nombre">{{ jugador.nombre }}</div>
+            <div class="carta"
+              [ngClass]="{
+                'oculta': jugador.modo === 'jugador' && !jugador.carta,
+                'espectador-carta': jugador.modo === 'espectador',
+                'revelada-animacion': cartasReveladas,
+                'rellena': jugador.carta !== null && jugador.carta !== undefined
+              }">
+              <ng-container *ngIf="cartasReveladas || jugador.modo === 'espectador'; else cartaOculta">
+                <span *ngIf="jugador.modo !== 'espectador'; else cartaEspectador">{{ jugador.carta ?? '—' }}</span>
+              </ng-container>
+              <ng-template #cartaOculta><span class="icono-oculto">💊</span></ng-template>
+              <ng-template #cartaEspectador><span class="icono-oculto">📹</span></ng-template>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Fila central -->
+      <div class="fila fila-central">
+        <div class="columna columna-izquierda">
+          <ng-container *ngFor="let jugador of jugadores.slice(jugadores.length / 4, jugadores.length / 2)">
+            <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
+              <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
+              <div class="nombre">{{ jugador.nombre }}</div>
+              <div class="carta"
+                [ngClass]="{
+                  'oculta': jugador.modo === 'jugador' && !jugador.carta,
+                  'espectador-carta': jugador.modo === 'espectador',
+                  'revelada-animacion': cartasReveladas,
+                  'rellena': jugador.carta !== null && jugador.carta !== undefined
+                }">
+                <ng-container *ngIf="cartasReveladas || jugador.modo === 'espectador'; else cartaOculta">
+                  <span *ngIf="jugador.modo !== 'espectador'; else cartaEspectador">{{ jugador.carta ?? '—' }}</span>
+                </ng-container>
+                <ng-template #cartaOculta><span class="icono-oculto">💊</span></ng-template>
+                <ng-template #cartaEspectador><span class="icono-oculto">📹</span></ng-template>
+              </div>
+            </div>
           </ng-container>
-          <ng-template #cartaOculta><span class="icono-oculto"></span></ng-template>
-          <ng-template #cartaEspectador><span class="icono-oculto">🎥</span></ng-template>
+        </div>
+
+        <div class="rectangulo-mesa">
+          <span class="mesa-texto">MESA</span>
+        </div>
+
+        <div class="columna columna-derecha">
+          <ng-container *ngFor="let jugador of jugadores.slice(jugadores.length / 2, jugadores.length * 0.75)">
+            <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
+              <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
+              <div class="nombre">{{ jugador.nombre }}</div>
+              <div class="carta"
+                [ngClass]="{
+                  'oculta': jugador.modo === 'jugador' && !jugador.carta,
+                  'espectador-carta': jugador.modo === 'espectador',
+                  'revelada-animacion': cartasReveladas,
+                  'rellena': jugador.carta !== null && jugador.carta !== undefined
+                }">
+                <ng-container *ngIf="cartasReveladas || jugador.modo === 'espectador'; else cartaOculta">
+                  <span *ngIf="jugador.modo !== 'espectador'; else cartaEspectador">{{ jugador.carta ?? '—' }}</span>
+                </ng-container>
+                <ng-template #cartaOculta><span class="icono-oculto">💊</span></ng-template>
+                <ng-template #cartaEspectador><span class="icono-oculto">📹</span></ng-template>
+              </div>
+            </div>
+          </ng-container>
         </div>
       </div>
+
+      <!-- Fila inferior -->
+      <div class="fila fila-inferior">
+        <ng-container *ngFor="let jugador of jugadores.slice(jugadores.length * 0.75)">
+          <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
+            <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
+            <div class="nombre">{{ jugador.nombre }}</div>
+            <div class="carta"
+              [ngClass]="{
+                'oculta': jugador.modo === 'jugador' && !jugador.carta,
+                'espectador-carta': jugador.modo === 'espectador',
+                'revelada-animacion': cartasReveladas,
+                'rellena': jugador.carta !== null && jugador.carta !== undefined
+              }">
+              <ng-container *ngIf="cartasReveladas || jugador.modo === 'espectador'; else cartaOculta">
+                <span *ngIf="jugador.modo !== 'espectador'; else cartaEspectador">{{ jugador.carta ?? '—' }}</span>
+              </ng-container>
+              <ng-template #cartaOculta><span class="icono-oculto">💊</span></ng-template>
+              <ng-template #cartaEspectador><span class="icono-oculto">📹</span></ng-template>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
     </div>
   </section>
 
-  <section class="acciones">
-    <ng-container *ngIf="usuarioAdministrador">
-
-      <!-- Botones de control (solo si es admin o espectador) -->
-      <div *ngIf="usuarioAdministrador.modo !== 'espectador'" class="botones-admin animar">
-        <button class="boton-next" (click)="siguienteRonda()">Siguiente Ronda →</button>
-        <button *ngIf="cartasReveladas" class="boton-next cerrar" (click)="cerrarRevelacion()">Ocultar Cartas 🙈</button>
-        <button *ngIf="!cartasReveladas" class="boton-next" (click)="revelarCartas()">Revelar Cartas 👀</button>
+  <!-- Acciones (botones, cambio de modo, elegir carta) -->
+  <section class="acciones" *ngIf="usuarioActual">
+    <ng-container *ngIf="esAdministrador">
+      <div class="botones-admin animar">
+        <button class="boton-next" (click)="siguienteRonda()">NEXT ROUND →</button>
+        <button *ngIf="!cartasReveladas" class="boton-next" (click)="revelarCartas()">REVELAR CARTAS 👁</button>
+        <button *ngIf="cartasReveladas" class="boton-next cerrar" (click)="cerrarRevelacion()">OCULTAR CARTAS 🙈</button>
       </div>
-
-      <!-- Mensaje si es espectador -->
-      <div *ngIf="usuarioAdministrador.modo === 'espectador'" class="mensaje-error">
-        Estás en modo espectador. No puedes elegir cartas.
-      </div>
-
     </ng-container>
+
+    <div *ngIf="usuarioActual.modo === 'espectador'" class="mensaje-error">
+      Estás en modo espectador. No puedes elegir cartas.
+    </div>
+
+    <app-elegir-carta
+      *ngIf="usuarioActual.modo === 'jugador'"
+      [cartas]="cartasDisponibles"
+      (cartaSeleccionadaEvent)="cargarJugadores()">
+    </app-elegir-carta>
   </section>
 
   <section *ngIf="cartasReveladas" class="resultados">
     <h3>Resultados</h3>
     <div *ngIf="promedioVotos === 0" class="mensaje-sin-votos animacion-votos">
-      <span class="emoji">😴</span>
-      Nadie ha votado todavía.
+      <span class="emoji">😬</span> Nadie ha votado todavía.
     </div>
     <ul *ngIf="promedioVotos > 0">
       <li *ngFor="let carta of cartasConVotos">
