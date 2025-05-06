@@ -46,7 +46,18 @@
         <ng-container *ngFor="let jugador of jugadores.slice(0, jugadores.length / 4)">
           <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
             <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
-            <div class="nombre">{{ jugador.nombre }}</div>
+            <div class="nombre">
+              {{ jugador.nombre }}
+              <span *ngIf="jugador.nombre === usuarioAdministrador?.nombre" title="Administrador">👑</span>
+            </div>
+            
+            <!-- Botón para asignar nuevo administrador -->
+<button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre"
+class="asignar-admin"
+(click)="asignarAdministrador(jugador)">
+👑 Hacer Admin
+</button>
+
             <div class="carta"
               [ngClass]="{
                 'oculta': jugador.modo === 'jugador' && !jugador.carta,
@@ -70,7 +81,18 @@
           <ng-container *ngFor="let jugador of jugadores.slice(jugadores.length / 4, jugadores.length / 2)">
             <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
               <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
-              <div class="nombre">{{ jugador.nombre }}</div>
+              <div class="nombre">
+                {{ jugador.nombre }}
+                <span *ngIf="jugador.nombre === usuarioAdministrador?.nombre" title="Administrador">👑</span>
+              </div>
+              
+              <!-- Botón para asignar nuevo administrador -->
+<button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre"
+class="asignar-admin"
+(click)="asignarAdministrador(jugador)">
+👑 Hacer Admin
+</button>
+
               <div class="carta"
                 [ngClass]="{
                   'oculta': jugador.modo === 'jugador' && !jugador.carta,
@@ -96,7 +118,18 @@
           <ng-container *ngFor="let jugador of jugadores.slice(jugadores.length / 2, jugadores.length * 0.75)">
             <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
               <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
-              <div class="nombre">{{ jugador.nombre }}</div>
+              <div class="nombre">
+                {{ jugador.nombre }}
+                <span *ngIf="jugador.nombre === usuarioAdministrador?.nombre" title="Administrador">👑</span>
+              </div>
+              
+              <!-- Botón para asignar nuevo administrador -->
+<button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre"
+class="asignar-admin"
+(click)="asignarAdministrador(jugador)">
+👑 Hacer Admin
+</button>
+
               <div class="carta"
                 [ngClass]="{
                   'oculta': jugador.modo === 'jugador' && !jugador.carta,
@@ -120,7 +153,18 @@
         <ng-container *ngFor="let jugador of jugadores.slice(jugadores.length * 0.75)">
           <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
             <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
-            <div class="nombre">{{ jugador.nombre }}</div>
+            <div class="nombre">
+              {{ jugador.nombre }}
+              <span *ngIf="jugador.nombre === usuarioAdministrador?.nombre" title="Administrador">👑</span>
+            </div>
+            
+            <!-- Botón para asignar nuevo administrador -->
+<button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre"
+class="asignar-admin"
+(click)="asignarAdministrador(jugador)">
+👑 Hacer Admin
+</button>
+
             <div class="carta"
               [ngClass]="{
                 'oculta': jugador.modo === 'jugador' && !jugador.carta,

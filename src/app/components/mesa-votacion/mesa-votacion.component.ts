@@ -308,4 +308,19 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
       this.cartasReveladas = reveladas === 'true';
     }
   }
+  asignarAdministrador(jugador: any): void {
+    if (!this.esAdministrador) return;
+    if (jugador.nombre === this.usuarioAdministrador?.nombre) return;
+  
+    const confirmar = confirm(`¿Deseas asignar a ${jugador.nombre} como nuevo administrador?`);
+    if (!confirmar) return;
+  
+    localStorage.setItem('usuarioAdministrador', JSON.stringify(jugador));
+    this.usuarioAdministrador = jugador;
+    this.validarAdministrador();
+    this.cargarJugadores();
+  
+    window.dispatchEvent(new StorageEvent('storage', { key: 'usuarioAdministrador' }));
+  }
+  
 }

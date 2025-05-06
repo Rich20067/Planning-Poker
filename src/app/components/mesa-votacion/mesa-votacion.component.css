@@ -666,3 +666,22 @@ input:not(:checked) + .slider .text-on {
 input:not(:checked) + .slider .text-off {
   opacity: 1;
 }
+.asignar-admin {
+  margin-top: 4px;
+  padding: 4px 10px;
+  background-color: #ffd700; /* dorado */
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #000;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.asignar-admin:hover {
+  background-color: #ffea00;
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(255, 255, 0, 0.7);
+}
