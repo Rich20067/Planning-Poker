@@ -147,40 +147,47 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
   cargarJugadores(): void {
     const storageKey = `jugadores_${this.nombrePartida}`;
     const jugadoresAlmacenados = JSON.parse(localStorage.getItem(storageKey) || '[]');
-
+  
     const jugadoresConCartas = jugadoresAlmacenados.map((jugador: any) => {
       const claveUsuario = `usuario_${jugador.nombre}`;
       const datosActualizados = localStorage.getItem(claveUsuario);
       const datos = datosActualizados ? JSON.parse(datosActualizados) : jugador;
-
+  
       const carta = localStorage.getItem(`carta-${jugador.nombre}`);
       datos.carta = carta ? parseInt(carta, 10) : null;
-
+  
       if (!datos.avatarUrl) {
         datos.avatarUrl = this.avatarService.generarAvatarAleatorio();
       }
-
+  
       return datos;
     });
-
+  
     this.jugadores = jugadoresConCartas;
-
-    if (this.usuarioActual && !this.jugadores.find(j => j.nombre === this.usuarioActual.nombre)) {
-      const carta = localStorage.getItem(`carta-${this.usuarioActual.nombre}`);
-      const nuevoJugador = {
-        ...this.usuarioActual,
-        carta: carta ? parseInt(carta, 10) : null,
-        avatarUrl: this.usuarioActual.avatarUrl || this.avatarService.generarAvatarAleatorio()
-      };
-      this.jugadores.unshift(nuevoJugador);
+  
+    // ✅ Garantizar que el administrador esté incluido con su carta
+    const admin = this.obtenerUsuarioAdministrador();
+    if (admin) {
+      const cartaAdmin = localStorage.getItem(`carta-${admin.nombre}`);
+      admin.carta = cartaAdmin ? parseInt(cartaAdmin, 10) : null;
+  
+      const yaExiste = this.jugadores.find(j => j.nombre === admin.nombre);
+      if (!yaExiste) {
+        this.jugadores.unshift(admin);
+      } else {
+        // 🔁 Si ya existe, actualizar su carta sin sobrescribir
+        this.jugadores = this.jugadores.map(j =>
+          j.nombre === admin.nombre ? { ...j, carta: admin.carta } : j
+        );
+      }
     }
-
+  
     this.actualizarEstadoAdministrador();
     this.contarVotos();
     this.calcularPromedio();
     this.actualizarCartasConVotos();
   }
-
+  
   actualizarEstadoAdministrador(): void {
     const admin = this.obtenerUsuarioAdministrador();
     if (!admin) return;
@@ -273,6 +280,7 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
   cerrarOverlay(): void {
     this.mostrarUnirseOverlay = false;
     this.usuarioActual = this.obtenerUsuarioActual();
+    sessionStorage.setItem('usuarioEnSesion', this.usuarioActual.nombre);
     this.validarAdministrador();
     this.cargarJugadores();
   }

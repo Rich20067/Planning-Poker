@@ -29,22 +29,13 @@ export class ElegirCartaComponent implements OnInit, OnDestroy {
   elegirCarta(carta: number): void {
     if (!this.usuarioActual || !this.nombre) return;
 
-    const esAdmin = this.esAdministrador();
-
-    // Solo puede elegir carta si es jugador o si es administrador
-    if (this.modo !== 'jugador') return;
-
+    if (!(this.modo === 'jugador' || this.esAdministrador())) return;
 
     this.cartaSeleccionada = carta;
     const claveCarta = this.obtenerClaveUsuario();
     localStorage.setItem(claveCarta, carta.toString());
 
     this.cartaSeleccionadaEvent.emit();
-
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: claveCarta,
-      newValue: carta.toString()
-    }));
   }
 
   private obtenerClaveUsuario(): string {
@@ -52,23 +43,26 @@ export class ElegirCartaComponent implements OnInit, OnDestroy {
   }
 
   private obtenerUsuarioActual(): any {
-    try {
-      return JSON.parse(localStorage.getItem('usuarioActual') || '{}');
-    } catch {
-      return {};
+    const nombreSesion = sessionStorage.getItem('usuarioEnSesion');
+    if (nombreSesion) {
+      const data = localStorage.getItem(`usuario_${nombreSesion}`);
+      return data ? JSON.parse(data) : {};
     }
+  
+    // Fallback (solo si no hay usuarioEnSesion)
+    return JSON.parse(localStorage.getItem('usuarioActual') || '{}');
   }
+  
 
   private actualizarDatosDesdeStorage(): void {
     this.usuarioActual = this.obtenerUsuarioActual();
-    this.modo = this.usuarioActual?.modo || '';
     this.nombre = this.usuarioActual?.nombre || '';
 
-    // Si es administrador y su modo no está en 'jugador', lo forzamos a 'jugador'
-    const esAdmin = this.esAdministrador();
-    if (esAdmin && this.modo !== 'jugador') {
-      this.modo = 'jugador';
-    }
+    const admin = localStorage.getItem('usuarioAdministrador');
+    const adminObj = admin ? JSON.parse(admin) : null;
+    const esAdmin = adminObj?.nombre?.trim() === this.nombre?.trim();
+
+    this.modo = esAdmin ? 'jugador' : this.usuarioActual?.modo || '';
 
     const claveCarta = this.obtenerClaveUsuario();
     const cartaGuardada = localStorage.getItem(claveCarta);

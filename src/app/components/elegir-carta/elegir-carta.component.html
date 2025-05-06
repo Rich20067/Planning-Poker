@@ -1,4 +1,4 @@
-<div class="contenedor" *ngIf="modo === 'jugador'; else noJugador">
+<div class="contenedor" *ngIf="modo === 'jugador' || esAdministrador(); else noJugador">
 
   <h3>Elige una carta</h3>
 

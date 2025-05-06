@@ -64,7 +64,8 @@ export class CrearUsuarioAdministradorComponent {
       localStorage.setItem('usuarioAdministrador', adminJson);
       localStorage.setItem('usuarioActual', adminJson);
       localStorage.setItem(`usuario_${usuarioAdministrador.nombre}`, adminJson);
-      
+      sessionStorage.setItem('usuarioEnSesion', usuarioAdministrador.nombre);
+
       // Clave necesaria para cambio de modo
       localStorage.setItem(`usuario_${usuarioAdministrador.nombre}`, JSON.stringify(usuarioAdministrador));
 
