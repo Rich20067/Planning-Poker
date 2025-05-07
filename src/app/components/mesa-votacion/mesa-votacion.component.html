@@ -18,6 +18,13 @@
     </div>
   </header>
 
+  <div *ngIf="esAdministrador && !cartasReveladas" class="modo-puntaje-panel">
+    <label for="modoPuntaje">🎯Modo de puntaje:</label>
+    <select id="modoPuntaje" [(ngModel)]="modoSeleccionado" (change)="cambiarModoDePuntaje()">
+      <option *ngFor="let modo of modosDePuntaje" [ngValue]="modo">🎴{{ modo.nombre }}</option>
+    </select>
+  </div>
+
   <!-- NUEVA TARJETA DE CAMBIO DE MODO -->
   <div class="modo-panel">
     <div class="modo-panel-select">
@@ -27,6 +34,7 @@
         <option value="espectador">👀 Espectador</option>
       </select>
     </div>
+
 
     <div class="modo-panel-switch">
       <label class="switch">
@@ -45,21 +53,20 @@
       <div class="fila fila-superior">
         <ng-container *ngFor="let jugador of jugadores.slice(0, jugadores.length / 4)">
           <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
-            <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
+            <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar"
+              (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
             <div class="nombre">
               {{ jugador.nombre }}
               <span *ngIf="jugador.nombre === usuarioAdministrador?.nombre" title="Administrador">👑</span>
             </div>
-            
-            <!-- Botón para asignar nuevo administrador -->
-<button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre"
-class="asignar-admin"
-(click)="asignarAdministrador(jugador)">
-👑 Hacer Admin
-</button>
 
-            <div class="carta"
-              [ngClass]="{
+            <!-- Botón para asignar nuevo administrador -->
+            <button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre" class="asignar-admin"
+              (click)="asignarAdministrador(jugador)">
+              👑 Hacer Admin
+            </button>
+
+            <div class="carta" [ngClass]="{
                 'oculta': jugador.modo === 'jugador' && !jugador.carta,
                 'espectador-carta': jugador.modo === 'espectador',
                 'revelada-animacion': cartasReveladas,
@@ -80,21 +87,20 @@ class="asignar-admin"
         <div class="columna columna-izquierda">
           <ng-container *ngFor="let jugador of jugadores.slice(jugadores.length / 4, jugadores.length / 2)">
             <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
-              <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
+              <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar"
+                (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
               <div class="nombre">
                 {{ jugador.nombre }}
                 <span *ngIf="jugador.nombre === usuarioAdministrador?.nombre" title="Administrador">👑</span>
               </div>
-              
-              <!-- Botón para asignar nuevo administrador -->
-<button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre"
-class="asignar-admin"
-(click)="asignarAdministrador(jugador)">
-👑 Hacer Admin
-</button>
 
-              <div class="carta"
-                [ngClass]="{
+              <!-- Botón para asignar nuevo administrador -->
+              <button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre" class="asignar-admin"
+                (click)="asignarAdministrador(jugador)">
+                👑 Hacer Admin
+              </button>
+
+              <div class="carta" [ngClass]="{
                   'oculta': jugador.modo === 'jugador' && !jugador.carta,
                   'espectador-carta': jugador.modo === 'espectador',
                   'revelada-animacion': cartasReveladas,
@@ -117,21 +123,20 @@ class="asignar-admin"
         <div class="columna columna-derecha">
           <ng-container *ngFor="let jugador of jugadores.slice(jugadores.length / 2, jugadores.length * 0.75)">
             <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
-              <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
+              <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar"
+                (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
               <div class="nombre">
                 {{ jugador.nombre }}
                 <span *ngIf="jugador.nombre === usuarioAdministrador?.nombre" title="Administrador">👑</span>
               </div>
-              
-              <!-- Botón para asignar nuevo administrador -->
-<button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre"
-class="asignar-admin"
-(click)="asignarAdministrador(jugador)">
-👑 Hacer Admin
-</button>
 
-              <div class="carta"
-                [ngClass]="{
+              <!-- Botón para asignar nuevo administrador -->
+              <button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre" class="asignar-admin"
+                (click)="asignarAdministrador(jugador)">
+                👑 Hacer Admin
+              </button>
+
+              <div class="carta" [ngClass]="{
                   'oculta': jugador.modo === 'jugador' && !jugador.carta,
                   'espectador-carta': jugador.modo === 'espectador',
                   'revelada-animacion': cartasReveladas,
@@ -152,21 +157,20 @@ class="asignar-admin"
       <div class="fila fila-inferior">
         <ng-container *ngFor="let jugador of jugadores.slice(jugadores.length * 0.75)">
           <div class="jugador" [ngClass]="{ 'espectador': jugador.modo === 'espectador' }">
-            <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar" (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
+            <img class="avatar" [src]="jugador.avatarUrl" alt="Avatar"
+              (error)="jugador.avatarUrl = 'assets/avatars/logo1.jpg'" />
             <div class="nombre">
               {{ jugador.nombre }}
               <span *ngIf="jugador.nombre === usuarioAdministrador?.nombre" title="Administrador">👑</span>
             </div>
-            
-            <!-- Botón para asignar nuevo administrador -->
-<button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre"
-class="asignar-admin"
-(click)="asignarAdministrador(jugador)">
-👑 Hacer Admin
-</button>
 
-            <div class="carta"
-              [ngClass]="{
+            <!-- Botón para asignar nuevo administrador -->
+            <button *ngIf="esAdministrador && jugador.nombre !== usuarioAdministrador?.nombre" class="asignar-admin"
+              (click)="asignarAdministrador(jugador)">
+              👑 Hacer Admin
+            </button>
+
+            <div class="carta" [ngClass]="{
                 'oculta': jugador.modo === 'jugador' && !jugador.carta,
                 'espectador-carta': jugador.modo === 'espectador',
                 'revelada-animacion': cartasReveladas,
@@ -191,7 +195,8 @@ class="asignar-admin"
       <div class="botones-admin animar">
         <button class="boton-next" (click)="siguienteRonda()">NEXT ROUND →</button>
         <button *ngIf="!cartasReveladas" class="boton-next" (click)="revelarCartas()">REVELAR CARTAS 👁</button>
-        <button *ngIf="cartasReveladas" class="boton-next cerrar" (click)="cerrarRevelacion()">OCULTAR CARTAS 🙈</button>
+        <button *ngIf="cartasReveladas" class="boton-next cerrar" (click)="cerrarRevelacion()">OCULTAR CARTAS
+          🙈</button>
       </div>
     </ng-container>
 
@@ -199,22 +204,27 @@ class="asignar-admin"
       Estás en modo espectador. No puedes elegir cartas.
     </div>
 
-    <app-elegir-carta
-      *ngIf="usuarioActual.modo === 'jugador'"
-      [cartas]="cartasDisponibles"
+    <app-elegir-carta *ngIf="usuarioActual.modo === 'jugador'" [cartas]="cartasDisponibles"
       (cartaSeleccionadaEvent)="cargarJugadores()">
     </app-elegir-carta>
   </section>
 
   <section *ngIf="cartasReveladas" class="resultados">
     <h3>Resultados</h3>
-    <div *ngIf="promedioVotos === 0" class="mensaje-sin-votos animacion-votos">
+    <div *ngIf="cartasConVotos.length === 0" class="mensaje-sin-votos animacion-votos">
       <span class="emoji">😬</span> Nadie ha votado todavía.
     </div>
-    <ul *ngIf="promedioVotos > 0">
+    <ul *ngIf="cartasConVotos.length > 0">
       <li *ngFor="let carta of cartasConVotos">
         Carta {{ carta }}: {{ votosPorCarta[carta] }} voto(s)
       </li>
     </ul>
+    <div class="promedio">
+      Promedio:
+      <span *ngIf="promedioVotos !== null; else sinPromedio">
+        {{ promedioVotos }}
+      </span>
+      <ng-template #sinPromedio>No disponible...Elegiste ☕</ng-template>
+    </div>
   </section>
 </div>

@@ -9,10 +9,11 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./elegir-carta.component.css']
 })
 export class ElegirCartaComponent implements OnInit, OnDestroy {
-  @Input() cartas: number[] = [];
-  @Output() cartaSeleccionadaEvent = new EventEmitter<void>();
+  @Input() cartas: (string | number)[] = [];
 
-  cartaSeleccionada: number | null = null;
+  @Output() cartaSeleccionadaEvent = new EventEmitter<string | number>();
+
+  cartaSeleccionada: string | number | null = null;
   usuarioActual: any = {};
   modo: string = '';
   nombre: string = '';
@@ -26,7 +27,7 @@ export class ElegirCartaComponent implements OnInit, OnDestroy {
     window.removeEventListener('storage', this.actualizarDatosDesdeStorage.bind(this));
   }
 
-  elegirCarta(carta: number): void {
+  elegirCarta(carta: string | number): void {
     if (!this.usuarioActual || !this.nombre) return;
 
     if (!(this.modo === 'jugador' || this.esAdministrador())) return;
@@ -35,7 +36,7 @@ export class ElegirCartaComponent implements OnInit, OnDestroy {
     const claveCarta = this.obtenerClaveUsuario();
     localStorage.setItem(claveCarta, carta.toString());
 
-    this.cartaSeleccionadaEvent.emit();
+    this.cartaSeleccionadaEvent.emit(carta);
   }
 
   private obtenerClaveUsuario(): string {
@@ -48,11 +49,9 @@ export class ElegirCartaComponent implements OnInit, OnDestroy {
       const data = localStorage.getItem(`usuario_${nombreSesion}`);
       return data ? JSON.parse(data) : {};
     }
-  
-    // Fallback (solo si no hay usuarioEnSesion)
+
     return JSON.parse(localStorage.getItem('usuarioActual') || '{}');
   }
-  
 
   private actualizarDatosDesdeStorage(): void {
     this.usuarioActual = this.obtenerUsuarioActual();
@@ -66,7 +65,7 @@ export class ElegirCartaComponent implements OnInit, OnDestroy {
 
     const claveCarta = this.obtenerClaveUsuario();
     const cartaGuardada = localStorage.getItem(claveCarta);
-    this.cartaSeleccionada = cartaGuardada ? parseInt(cartaGuardada, 10) : null;
+    this.cartaSeleccionada = cartaGuardada ?? null;
   }
 
   esAdministrador(): boolean {

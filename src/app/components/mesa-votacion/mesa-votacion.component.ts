@@ -10,9 +10,14 @@ import { UnirsePartidaComponent } from '../unirse-partida/unirse-partida.compone
 @Component({
   selector: 'app-mesa-votacion',
   standalone: true,
-  imports: [CommonModule, FormsModule, ElegirCartaComponent, UnirsePartidaComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ElegirCartaComponent,
+    UnirsePartidaComponent,
+  ],
   templateUrl: './mesa-votacion.component.html',
-  styleUrls: ['./mesa-votacion.component.css']
+  styleUrls: ['./mesa-votacion.component.css'],
 })
 export class MesaVotacionComponent implements OnInit, OnDestroy {
   nombrePartida: string = '';
@@ -20,13 +25,21 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
   usuarioAdministrador: any;
   usuarioActual: any;
   esAdministrador: boolean = false;
-  cartasDisponibles: number[] = [];
+  cartasDisponibles: (number | string)[] = [];
   cartasReveladas: boolean = false;
-  votosPorCarta: { [carta: number]: number } = {};
-  promedioVotos: number = 0;
-  cartasConVotos: number[] = [];
+  votosPorCarta: { [carta: string]: number } = {};
+  promedioVotos: number | null = null;
+  cartasConVotos: (string | number)[] = [];
   mostrarUnirseOverlay = false;
   linkDeInvitacion: string = '';
+
+  modosDePuntaje = [
+    { nombre: 'Fibonacci', valores: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?', '☕'] },
+    { nombre: 'Camisetas', valores: ['XS', 'S', 'M', 'L', 'XL', '?', '☕'] },
+    { nombre: 'Secuencia lineal', valores: [1, 2, 3, 4, 5, 6, 7 ,8, 9, '?', '☕'] },
+    { nombre: 'Potencias de Dos', valores: [2, 4, 6, 8, 16, 16, 32, 64, '?','☕'] },
+  ];
+  modoSeleccionado = this.modosDePuntaje[0];
 
   constructor(
     private router: Router,
@@ -37,9 +50,14 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.cartasDisponibles = this.obtenerCartasDesdeLocalStorage();
+    const modoGuardado = localStorage.getItem('modoPuntajeSeleccionado');
+    this.modoSeleccionado = modoGuardado
+      ? JSON.parse(modoGuardado)
+      : this.modosDePuntaje[0];
 
-    this.route.queryParams.subscribe(params => {
+    this.cartasDisponibles = this.modoSeleccionado.valores;
+
+    this.route.queryParams.subscribe((params) => {
       const esInvitado = params['invitado'] === 'true';
       const nombrePartidaParam = params['nombrePartida'];
 
@@ -58,29 +76,27 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
 
       const storageKey = `jugadores_${this.nombrePartida}`;
       const jugadores = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      const usuarioYaRegistrado = jugadores.some((j: any) => j.nombre === this.usuarioActual?.nombre);
+      const usuarioYaRegistrado = jugadores.some(
+        (j: any) => j.nombre === this.usuarioActual?.nombre
+      );
 
-      if (esInvitado || !this.usuarioActual || !usuarioYaRegistrado) {
-        this.mostrarUnirseOverlay = true;
-      } else {
-        this.mostrarUnirseOverlay = false;
+      this.mostrarUnirseOverlay =
+        esInvitado || !this.usuarioActual || !usuarioYaRegistrado;
+      if (!this.mostrarUnirseOverlay) {
         this.cargarJugadores();
       }
     });
 
     window.addEventListener('storage', this.onStorageChange.bind(this));
 
-    const reveladas = localStorage.getItem(`cartasReveladas_${this.nombrePartida}`);
+    const reveladas = localStorage.getItem(
+      `cartasReveladas_${this.nombrePartida}`
+    );
     this.cartasReveladas = reveladas === 'true';
   }
 
   ngOnDestroy(): void {
     window.removeEventListener('storage', this.onStorageChange.bind(this));
-  }
-
-  obtenerCartasDesdeLocalStorage(): number[] {
-    const cartasGuardadas = localStorage.getItem('poolCartas');
-    return cartasGuardadas ? JSON.parse(cartasGuardadas) : [1, 2, 3, 5, 8, 13, 21];
   }
 
   obtenerUsuarioAdministrador(): any {
@@ -132,34 +148,32 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
     this.validarAdministrador();
     this.cargarJugadores();
 
-    this.jugadores = [...this.jugadores];
     this.cdr.detectChanges();
-
     window.dispatchEvent(new StorageEvent('storage', { key: 'usuarioActual' }));
   }
 
   alternarModo(): void {
     if (!this.usuarioActual) return;
-    const nuevoModo = this.usuarioActual.modo === 'jugador' ? 'espectador' : 'jugador';
+    const nuevoModo =
+      this.usuarioActual.modo === 'jugador' ? 'espectador' : 'jugador';
     this.cambiarModo(nuevoModo);
   }
 
   cargarJugadores(): void {
     const storageKey = `jugadores_${this.nombrePartida}`;
-    const jugadoresAlmacenados = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    const jugadoresAlmacenados = JSON.parse(
+      localStorage.getItem(storageKey) || '[]'
+    );
 
     const jugadoresConCartas = jugadoresAlmacenados.map((jugador: any) => {
       const claveUsuario = `usuario_${jugador.nombre}`;
       const datosActualizados = localStorage.getItem(claveUsuario);
       const datos = datosActualizados ? JSON.parse(datosActualizados) : jugador;
-
       const carta = localStorage.getItem(`carta-${jugador.nombre}`);
-      datos.carta = carta ? parseInt(carta, 10) : null;
-
+      datos.carta = carta ?? null;
       if (!datos.avatarUrl) {
         datos.avatarUrl = this.avatarService.generarAvatarAleatorio();
       }
-
       return datos;
     });
 
@@ -168,13 +182,12 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
     const admin = this.obtenerUsuarioAdministrador();
     if (admin) {
       const cartaAdmin = localStorage.getItem(`carta-${admin.nombre}`);
-      admin.carta = cartaAdmin ? parseInt(cartaAdmin, 10) : null;
-
-      const yaExiste = this.jugadores.find(j => j.nombre === admin.nombre);
+      admin.carta = cartaAdmin ?? null;
+      const yaExiste = this.jugadores.find((j) => j.nombre === admin.nombre);
       if (!yaExiste) {
         this.jugadores.unshift(admin);
       } else {
-        this.jugadores = this.jugadores.map(j =>
+        this.jugadores = this.jugadores.map((j) =>
           j.nombre === admin.nombre ? { ...j, carta: admin.carta } : j
         );
       }
@@ -189,11 +202,9 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
   actualizarEstadoAdministrador(): void {
     const admin = this.obtenerUsuarioAdministrador();
     if (!admin) return;
-
     const carta = localStorage.getItem(`carta-${admin.nombre}`);
-    admin.carta = carta ? parseInt(carta, 10) : null;
-
-    const index = this.jugadores.findIndex(j => j.nombre === admin.nombre);
+    admin.carta = carta ?? null;
+    const index = this.jugadores.findIndex((j) => j.nombre === admin.nombre);
     if (index !== -1) {
       this.jugadores[index].carta = admin.carta;
     } else {
@@ -203,9 +214,10 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
 
   contarVotos(): void {
     this.votosPorCarta = {};
-    this.jugadores.forEach(jugador => {
-      if (jugador && jugador.carta !== undefined && jugador.carta !== null && jugador.modo !== 'espectador') {
-        this.votosPorCarta[jugador.carta] = (this.votosPorCarta[jugador.carta] || 0) + 1;
+    this.jugadores.forEach((jugador) => {
+      if (jugador && jugador.carta != null && jugador.modo !== 'espectador') {
+        const clave = jugador.carta.toString();
+        this.votosPorCarta[clave] = (this.votosPorCarta[clave] || 0) + 1;
       }
     });
   }
@@ -214,20 +226,51 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
     let suma = 0;
     let cantidad = 0;
 
-    this.jugadores.forEach(jugador => {
-      if (jugador && jugador.carta !== undefined && jugador.carta !== null && jugador.modo !== 'espectador') {
-        suma += jugador.carta;
+    this.jugadores.forEach((jugador) => {
+      const valor = Number(jugador.carta);
+      if (
+        jugador &&
+        jugador.carta !== undefined &&
+        jugador.carta !== null &&
+        !isNaN(valor) &&
+        jugador.modo !== 'espectador'
+      ) {
+        suma += valor;
         cantidad++;
       }
     });
 
-    this.promedioVotos = cantidad > 0 ? Math.round(suma / cantidad) : 0;
+    this.promedioVotos = cantidad > 0 ? Math.round(suma / cantidad) : null;
   }
 
   actualizarCartasConVotos(): void {
-    this.cartasConVotos = Object.keys(this.votosPorCarta)
-      .map(Number)
-      .sort((a, b) => a - b);
+    this.cartasConVotos = Object.keys(this.votosPorCarta);
+  }
+
+  cambiarModoDePuntaje(): void {
+    if (!this.esAdministrador || this.cartasReveladas) return;
+    this.cartasDisponibles = this.modoSeleccionado.valores;
+    localStorage.setItem(
+      'modoPuntajeSeleccionado',
+      JSON.stringify(this.modoSeleccionado)
+    );
+
+    const storageKey = `jugadores_${this.nombrePartida}`;
+    const jugadores = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    jugadores.forEach((j: any) => {
+      localStorage.removeItem(`carta-${j.nombre}`);
+      j.carta = null;
+    });
+    localStorage.setItem(storageKey, JSON.stringify(jugadores));
+
+    if (this.usuarioAdministrador) {
+      localStorage.removeItem(`carta-${this.usuarioAdministrador.nombre}`);
+    }
+
+    this.cargarJugadores();
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: 'modoPuntajeSeleccionado' })
+    );
   }
 
   revelarCartas(): void {
@@ -249,12 +292,10 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
     if (!this.esAdministrador) return;
     const storageKey = `jugadores_${this.nombrePartida}`;
     const jugadores = JSON.parse(localStorage.getItem(storageKey) || '[]');
-
     jugadores.forEach((jugador: any) => {
       localStorage.removeItem(`carta-${jugador.nombre}`);
       jugador.carta = null;
     });
-
     localStorage.setItem(storageKey, JSON.stringify(jugadores));
 
     if (this.usuarioAdministrador) {
@@ -287,26 +328,28 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
       event.key === `jugadores_${this.nombrePartida}` ||
       event.key === 'usuarioAdministrador' ||
       event.key === 'usuarioActual' ||
-      event.key === `cartasReveladas_${this.nombrePartida}`
+      event.key === `cartasReveladas_${this.nombrePartida}` ||
+      event.key === 'modoPuntajeSeleccionado'
     ) {
       this.usuarioAdministrador = this.obtenerUsuarioAdministrador();
-
-      // ✅ Mantener usuario en sesión para evitar sobrescribir al admin en su pestaña
       const nombreSesion = sessionStorage.getItem('usuarioEnSesion');
       const actualEnSesion = nombreSesion
         ? JSON.parse(localStorage.getItem(`usuario_${nombreSesion}`) || 'null')
         : null;
 
-      if (actualEnSesion) {
-        this.usuarioActual = actualEnSesion;
-      } else {
-        this.usuarioActual = this.obtenerUsuarioActual();
-      }
-
+      this.usuarioActual = actualEnSesion || this.obtenerUsuarioActual();
       this.validarAdministrador();
-      this.cargarJugadores();
 
-      const reveladas = localStorage.getItem(`cartasReveladas_${this.nombrePartida}`);
+      const modoGuardado = localStorage.getItem('modoPuntajeSeleccionado');
+      this.modoSeleccionado = modoGuardado
+        ? JSON.parse(modoGuardado)
+        : this.modosDePuntaje[0];
+      this.cartasDisponibles = this.modoSeleccionado.valores;
+
+      this.cargarJugadores();
+      const reveladas = localStorage.getItem(
+        `cartasReveladas_${this.nombrePartida}`
+      );
       this.cartasReveladas = reveladas === 'true';
 
       this.cdr.detectChanges();
@@ -314,17 +357,22 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
   }
 
   asignarAdministrador(jugador: any): void {
-    if (!this.esAdministrador) return;
-    if (jugador.nombre === this.usuarioAdministrador?.nombre) return;
-
-    const confirmar = confirm(`¿Deseas asignar a ${jugador.nombre} como nuevo administrador?`);
+    if (
+      !this.esAdministrador ||
+      jugador.nombre === this.usuarioAdministrador?.nombre
+    )
+      return;
+    const confirmar = confirm(
+      `¿Deseas asignar a ${jugador.nombre} como nuevo administrador?`
+    );
     if (!confirmar) return;
 
     localStorage.setItem('usuarioAdministrador', JSON.stringify(jugador));
     this.usuarioAdministrador = jugador;
     this.validarAdministrador();
     this.cargarJugadores();
-
-    window.dispatchEvent(new StorageEvent('storage', { key: 'usuarioAdministrador' }));
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: 'usuarioAdministrador' })
+    );
   }
 }
