@@ -25,11 +25,11 @@ html, body {
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  padding-left: 4rem;
   overflow: hidden;
   z-index: 0;
+  padding: 2rem 1rem;
 }
 
 .burbujeo {
@@ -59,29 +59,32 @@ html, body {
 }
 
 @keyframes flotar {
-  0% {
-    transform: translate(0%, 0%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
+  0% { transform: translate(0%, 0%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-/* Título principal */
+/* Contenedor general centrado y desplazado a la derecha */
+.contenedor-central {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(15%);
+  width: 100%;
+  min-height: 100vh;
+  text-align: center;
+  z-index: 1;
+}
+
 .titulo-principal {
-  position: absolute;
-  top: -1rem;
-  left: 70%;
-  transform: translateX(-50%);
   font-size: 2.8rem;
   color: white;
   text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6);
-  z-index: 2;
   font-weight: bold;
   letter-spacing: 1px;
   text-align: center;
-  margin-top: 4rem;
-  white-space: nowrap;
+  margin-bottom: 2rem;
+  z-index: 2;
 }
 
 .crear-partida-card {
@@ -96,8 +99,6 @@ html, body {
   max-width: 450px;
   min-height: 250px;
   z-index: 1;
-  margin-left: 625px;
-  margin-top: 1rem;
 }
 
 /* Secciones internas */
@@ -126,10 +127,9 @@ input, select {
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: white;
   color: black;
   backdrop-filter: blur(10px);
-  background-color: white;
 }
 
 select option {
@@ -163,33 +163,33 @@ button:hover {
 
 /* Responsive: Tablets */
 @media (min-width: 769px) and (max-width: 1024px) {
-  .titulo-principal {
-    left: 60%;
-    transform: translateX(-50%);
-    font-size: 2.4rem;
-    top: 1.5rem;
+  .contenedor-central {
+    transform: translateX(5%);
   }
-
-
+  .titulo-principal {
+    font-size: 2.4rem;
+  }
 }
 
 /* Responsive: Móviles */
 @media (max-width: 768px) {
-  .fondo {
-    padding: 3rem 1rem 1rem 1rem;
-    align-items: flex-start;
+  .contenedor-central {
+    transform: translateX(0);
+    padding: 2rem 1rem;
   }
 
-
-}
-
-/* Responsive: Móviles pequeños */
-@media (max-width: 480px) {
   .titulo-principal {
-    font-size: 1.8rem;
-    top: 0.5rem;
+    font-size: 2rem;
+    white-space: normal;
+  }
+
+  .crear-partida-card {
+    padding: 1.5rem;
+    width: 95%;
   }
 }
+
+/* Header de nombre de partida */
 .nombre-partida-header {
   position: absolute;
   top: 1rem;
@@ -199,7 +199,5 @@ button:hover {
   background-color: rgba(0, 0, 0, 0.4);
   padding: 0.5rem 1rem;
   border-radius: 5px;
-  margin-top:1% ;
   margin-left: 81%;
-
 }

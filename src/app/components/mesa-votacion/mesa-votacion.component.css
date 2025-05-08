@@ -1,7 +1,7 @@
 /* Fondo principal */
 .fondo-translucido {
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-              url('/assets/fondoo.png') center/cover no-repeat;
+              url('/assets/fondoazul.png') center/cover no-repeat;
   backdrop-filter: blur(20px);
   color: #e5e3eb;
   border-radius: 2rem;
@@ -10,18 +10,21 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  width: 100%;
-  overflow: hidden;
+  height: auto;
+  overflow-y: auto;     /* ✅ permite scroll vertical si hay contenido */
+  overflow-x: hidden;   /* ✅ evita desbordamiento horizontal */
   text-align: center;
 }
 
-/* Reset */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: scroll; /* ✅ si quieres que la barra esté siempre visible */
 }
+
+
 
 /* Header */
 header {
@@ -31,20 +34,19 @@ header {
 
 /* Scroll de jugadores */
 .mesa-scroll {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  max-height: calc(100vh - 300px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
 }
 
-/* Mesa */
 .mesa {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
-  padding: 1rem;
-  overflow: visible;
+  flex-direction: column;
+  width: max-content;
+  min-width: 1200px;
 }
+
+
 
 /* Jugador */
 .jugador {
@@ -431,7 +433,7 @@ header {
 }
 .invitar {
   background: rgba(255, 255, 255, 0.08);
-  padding: 1rem;
+  padding: 5rem;
   border-radius: 12px;
   margin-bottom: 1rem;
   text-align: center;
@@ -440,7 +442,7 @@ header {
 
 .link-invitacion {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.2rem;
   border-radius: 8px;
   border: none;
   margin-top: 0.5rem;
@@ -448,6 +450,7 @@ header {
   text-align: center;
   background: rgba(255, 255, 255, 0.15);
   color: white;
+  
 }
 
 .boton-copiar {
@@ -526,38 +529,39 @@ header {
 /* Contenedor principal estilo barra oscura */
 .modo-panel {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 65px;
+  right: 26px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  background-color: #1e293b; /* fondo oscuro */
+  background-color: #1e293b;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 8px;
   color: #f1f5f9;
   font-family: system-ui, sans-serif;
-  gap: 16px;
-  z-index: 1000;
+  z-index: 100;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  gap: 2px; /* Espacio compacto entre select y switch */
 }
 
 /* Label del select */
 .modo-panel-select label {
   font-weight: bold;
-  margin-right: 8px;
+  margin-right: 4px;
   color: #f1f5f9;
 }
 
-/* Contenedor visual con flecha */
+/* Contenedor del label y select */
 .modo-panel-select {
   position: relative;
   display: flex;
   align-items: center;
+  gap: 4px; /* espacio entre texto y select */
 }
 
 /* Select estilizado */
 .modo-panel-select select {
-  padding: 6px 12px;
+  padding: 4px 6px;
   border-radius: 6px;
   border: none;
   background-color: transparent;
@@ -566,25 +570,11 @@ header {
   color: #f1f5f9;
   outline: none;
   appearance: none;
-  cursor: pointer; /* 👈 ícono de mano */
-  padding-right: 24px; /* espacio para la flecha */
-}
-
-/* Flecha visual en el select */
-.modo-panel-select::after {
-  content: "🔽";
-  position: absolute;
-  right: 8px;
-  pointer-events: none;
-  font-size: 18px;
-  color: #f1f5f9;
-}
-/* Solo se aplica en navegadores que soportan bien estilos en options */
-.modo-panel-select select option:hover {
-  background-color: #334155;
-  font-size: 16px; /* ligeramente más grande */
-  font-weight: bold;
   cursor: pointer;
+  padding-right: 10px;
+  min-width: 100px;
+  max-width: 130px;
+  text-align: center;
 }
 
 /* Opciones internas del select */
@@ -593,17 +583,19 @@ header {
   color: white;
 }
 
-/* Switch visual */
+/* Contenedor del switch */
 .modo-panel-switch {
   display: flex;
   align-items: center;
+  margin-left: -6px; /* Empuja el switch más cerca del select */
 }
 
+/* Switch visual */
 .switch {
   position: relative;
   display: inline-block;
-  width: 90px;
-  height: 40px;
+  width: 48px;
+  height: 22px;
 }
 
 .switch input {
@@ -612,6 +604,7 @@ header {
   height: 0;
 }
 
+/* Slider del switch */
 .slider {
   position: absolute;
   inset: 0;
@@ -621,22 +614,24 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
+  padding: 0 8px;
   font-weight: bold;
   color: white;
   cursor: not-allowed;
+  padding: 0 6px; /* menos espacio interno */
 }
 
+/* Bolita del switch */
 .slider::before {
   content: "";
   position: absolute;
-  height: 32px;
-  width: 32px;
-  left: 4px;
-  bottom: 4px;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 2px;
   background-color: white;
   transition: 0.4s;
-  border-radius: 50%;
+  border-radius: 70%;
 }
 
 input:checked + .slider {
@@ -644,9 +639,10 @@ input:checked + .slider {
 }
 
 input:checked + .slider::before {
-  transform: translateX(40px);
+  transform: translateX(26px);
 }
 
+/* Emojis dentro del switch */
 .text-on,
 .text-off {
   font-size: 14px;
@@ -666,6 +662,42 @@ input:not(:checked) + .slider .text-on {
 input:not(:checked) + .slider .text-off {
   opacity: 1;
 }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .modo-panel {
+    top: 15px;
+    right: 10px;
+    transform: scale(0.9);
+  }
+
+  .modo-panel-select label {
+    font-size: 0.8rem;
+  }
+
+  .modo-panel-select select {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+  }
+
+  .switch {
+    width: 42px;
+    height: 20px;
+  }
+
+  .slider::before {
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    bottom: 2px;
+  }
+
+  .text-on, .text-off {
+    font-size: 12px;
+  }
+}
+
+
 .asignar-admin {
   margin-top: 4px;
   padding: 4px 10px;
@@ -687,37 +719,213 @@ input:not(:checked) + .slider .text-off {
 }
 .modo-puntaje-panel {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background-color: #1f2937; /* fondo oscuro tipo navy */
+  top: 4rem;
+  left: 1.6rem;
+  background-color: #1f2937;
   color: #ffffff;
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 14px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  gap: 1rem;
+  font-size: 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   z-index: 100;
+  font-family: system-ui, sans-serif;
+  
 }
 
 .modo-puntaje-panel label {
-  font-weight: 600;
+  font-weight: 500;
   margin: 0;
+  
 }
 
 .modo-puntaje-panel select {
   background-color: #0d1117;
   color: #fff;
   border: 1px solid #4b5563;
-  border-radius: 6px;
-  padding: 0.4rem 0.6rem;
-  font-size: 14px;
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  font-size: 12px;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease;
+  
 }
 
 .modo-puntaje-panel select:hover {
   border-color: #2563eb;
   background-color: #111827;
+  font-family: system-ui, sans-serif;
+}
+
+.link-invitacion {
+  margin-bottom: 1rem;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.contenedor-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 0 auto;
+  margin-top: 9px;
+  background-color: #1e1e2f;
+  padding: 8px 12px;
+  border-radius: 6px;
+  max-width: 465px;
+  width: 70%;
+  
+  
+}
+
+.contenedor-link input {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #0f0f1a;
+  color: #ffffff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+}
+
+.contenedor-link button {
+  padding: 6px 10px;
+  border: none;
+  background-color: #4caf50;
+  color: #ffffff;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.contenedor-link button:hover {
+  background-color: #45a049;
+}
+@media (max-width: 1024px) {
+  .jugadores-alrededor {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .fila-superior,
+  .fila-inferior,
+  .fila-central {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .columna {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .rectangulo-mesa {
+    margin: 1rem auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .mesa-scroll {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .jugadores-alrededor {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .fila-central {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .boton-next,
+  .boton-revelar {
+    width: 90%;
+  }
+
+  .modo-panel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    right: 10px;
+    top: 10px;
+  }
+
+  .modo-puntaje-panel {
+    flex-direction: column;
+    align-items: flex-start;
+    left: 10px;
+    top: 10px;
+  }
+}
+@media (max-width: 1024px) {
+  .modo-panel {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 10px;
+    font-size: 0.85rem;
+    right: 10px;
+    top: 10px;
+    transform: scale(0.95);
+  }
+
+  .modo-panel-select select {
+    font-size: 0.85rem;
+    padding: 6px;
+  }
+
+  .slider {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .modo-panel {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+    padding: 8px;
+    font-size: 0.8rem;
+    transform: scale(0.9);
+  }
+
+  .modo-panel-select label {
+    font-size: 0.8rem;
+  }
+
+  .modo-panel-select select {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+
+  .switch {
+    width: 70px;
+    height: 32px;
+  }
+
+  .slider::before {
+    height: 26px;
+    width: 26px;
+  }
+
+  .text-on, .text-off {
+    font-size: 12px;
+  }
 }

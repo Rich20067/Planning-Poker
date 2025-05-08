@@ -5,11 +5,14 @@
 <div class="fondo-translucido" *ngIf="!mostrarUnirseOverlay">
   <div class="acciones">
     <div class="link-invitacion">
-      <label>Invitar participantes:</label>
-      <input type="text" [value]="linkDeInvitacion" readonly />
-      <button (click)="copiarAlPortapapeles()">Copiar Link</button>
+      <label for="link-invitacion">Invitar participantes:</label>
+      <div class="contenedor-link">
+        <input id="link-invitacion" type="text" [value]="linkDeInvitacion" readonly />
+        <button (click)="copiarAlPortapapeles()">Copiar Link</button>
+      </div>
     </div>
   </div>
+
 
   <header>
     <h1>Mesa de Votación</h1>
@@ -30,13 +33,10 @@
     <div class="modo-panel-select">
       <label for="modo">Modo de visualización:</label>
       <select id="modo" [(ngModel)]="usuarioActual.modo" (change)="cambiarModo(usuarioActual.modo)">
-        <option value="jugador">🎮 Jugador</option>
-        <option value="espectador">👀 Espectador</option>
+        <option value="jugador"> 👉🏼Jugador 👈🏼</option>
+        <option value="espectador">👉🏼 Espectador 👈🏼</option>
       </select>
-    </div>
-
-
-    <div class="modo-panel-switch">
+  
       <label class="switch">
         <input type="checkbox" [checked]="usuarioActual?.modo === 'jugador'" disabled />
         <span class="slider">
@@ -46,6 +46,7 @@
       </label>
     </div>
   </div>
+  
 
   <section class="mesa-scroll">
     <div class="mesa-visual">

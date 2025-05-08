@@ -37,7 +37,7 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
     { nombre: 'Fibonacci', valores: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?', '☕'] },
     { nombre: 'Camisetas', valores: ['XS', 'S', 'M', 'L', 'XL', '?', '☕'] },
     { nombre: 'Secuencia lineal', valores: [1, 2, 3, 4, 5, 6, 7 ,8, 9, '?', '☕'] },
-    { nombre: 'Potencias de Dos', valores: [2, 4, 6, 8, 16, 16, 32, 64, '?','☕'] },
+    { nombre: 'Potencias de Dos', valores: [2, 4, 6, 8, 12, 16, 32, 64, '?','☕'] },
   ];
   modoSeleccionado = this.modosDePuntaje[0];
 

@@ -7,8 +7,8 @@
   
   html, body {
     width: 100%;
-    height: 100%;
-    overflow: hidden;       /* 🔒 Bloquea scroll */
+    height: 100%;       /* 🔒 Bloquea scroll */
     background: black;      /* Por si carga lenta la imagen */
+    overflow-y: scroll;
   }
   

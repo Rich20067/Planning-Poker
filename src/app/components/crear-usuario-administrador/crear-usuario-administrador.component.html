@@ -6,39 +6,45 @@
     Partida: <strong>{{ nombrePartida || 'Sin nombre' }}</strong>
   </div>
 
-  <div class="crear-partida-card">
-    <h2 class="titulo">🗿 Crear Usuario Administrador</h2>
+  <div class="contenedor-central">
+    <h1 class="titulo-principal">
+      Crear Usuario Administrador 💼
+    </h1>
 
-    <form [formGroup]="adminForm" (ngSubmit)="crearUsuarioAdministrador()">
-      <div class="form-section">
-        <input id="nombre" formControlName="nombre" placeholder="Nombre del Administrador" />
+    <div class="crear-partida-card">
+      <h2 class="titulo">Ingresa Tus Datos</h2>
 
-        <div class="error" *ngIf="nombre?.touched && nombre?.invalid">
-          <div *ngIf="nombre?.errors?.['required']">El nombre es obligatorio.</div>
-          <div *ngIf="nombre?.errors?.['minlength']">Debe tener al menos 5 caracteres.</div>
-          <div *ngIf="nombre?.errors?.['maxlength']">No puede tener más de 20 caracteres.</div>
-          <div *ngIf="nombre?.errors?.['pattern']">
-            El nombre no debe contener solo números, ni caracteres especiales (_,.*#/-),
-            y máximo puede tener 3 números.
+      <form [formGroup]="adminForm" (ngSubmit)="crearUsuarioAdministrador()">
+        <div class="form-section">
+          <input id="nombre" formControlName="nombre" placeholder="Nombre del Administrador" />
+
+          <div class="error" *ngIf="nombre?.touched && nombre?.invalid">
+            <div *ngIf="nombre?.errors?.['required']">El nombre es obligatorio.</div>
+            <div *ngIf="nombre?.errors?.['minlength']">Debe tener al menos 5 caracteres.</div>
+            <div *ngIf="nombre?.errors?.['maxlength']">No puede tener más de 20 caracteres.</div>
+            <div *ngIf="nombre?.errors?.['pattern']">
+              El nombre no debe contener solo números, ni caracteres especiales (_,.*#/-),
+              y máximo puede tener 3 números.
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-section">
-        <select id="modo" formControlName="modo">
-          <option value="" disabled hidden>Selecciona modo de visualización</option>
-          <option value="jugador">Jugador</option>
-          <option value="espectador">Espectador</option>
-        </select>
+        <div class="form-section">
+          <select id="modo" formControlName="modo">
+            <option value="" disabled hidden>Selecciona modo de visualización</option>
+            <option value="jugador">Jugador</option>
+            <option value="espectador">Espectador</option>
+          </select>
 
-        <div class="error" *ngIf="modo?.touched && modo?.invalid">
-          <div *ngIf="modo?.errors?.['required']">El modo es obligatorio.</div>
+          <div class="error" *ngIf="modo?.touched && modo?.invalid">
+            <div *ngIf="modo?.errors?.['required']">El modo es obligatorio.</div>
+          </div>
         </div>
-      </div>
 
-      <div class="form-footer">
-        <button type="submit" [disabled]="adminForm.invalid">Crear Administrador 💼</button>
-      </div>
-    </form>
+        <div class="form-footer">
+          <button type="submit" [disabled]="adminForm.invalid">Crear Administrador 💼</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

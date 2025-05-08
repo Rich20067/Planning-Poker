@@ -4,14 +4,15 @@
   background-position: center;
   background-repeat: no-repeat;
   min-height: 100vh;
-  min-width: 100vw;
+  width: 100%;
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding-left: 4rem;
+  flex-direction: column;
+  justify-content: center;  /* centra verticalmente */
+  align-items: center;      /* centra horizontalmente */
+  padding: 2rem 1rem;
   box-sizing: border-box;
-  overflow: hidden;
   position: relative;
+  overflow: hidden;
 }
 
 .burbujeo {
@@ -95,26 +96,21 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   width: 100%;
   max-width: 450px;
-  min-height: 250px;
   z-index: 1;
-  margin-left: 625px;
-  margin-top: 9rem; /* baja */
 }
 
+
 .titulo-principal {
-  position: absolute;
-  top: -1rem;
-  left: 70%;
-  transform: translateX(-50%);
   font-size: 2.8rem;
   color: white;
   text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6);
-  z-index: 2;
   font-weight: bold;
   letter-spacing: 1px;
   text-align: center;
-  margin-top: 5rem;
+  margin-bottom: 2rem; /* espacio entre título y tarjeta */
+  z-index: 2;
 }
+
 
 .titulo {
   font-size: 1.8rem;
@@ -222,3 +218,22 @@ button:hover {
     top: 0.5rem;
   }
 }
+.contenedor-central {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(25%); /* MÁS A LA DERECHA */
+  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .contenedor-central {
+    transform: translateX(0);
+    padding: 2rem 1rem;
+  }
+}
+
+
