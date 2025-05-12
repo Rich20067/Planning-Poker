@@ -19,13 +19,13 @@ export class UnirsePartidaComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router, // ✅ agregado para redirigir
+    private router: Router,
     private fb: FormBuilder,
     private avatarService: AvatarService
   ) {
     this.form = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
-      modo: ['jugador', Validators.required] // por defecto jugador
+      modo: ['jugador', Validators.required]
     });
   }
 
@@ -51,27 +51,19 @@ export class UnirsePartidaComponent implements OnInit {
 
     jugadores.push(nuevoJugador);
     localStorage.setItem(storageKey, JSON.stringify(jugadores));
-
-    // 🔥 claves esenciales
     localStorage.setItem(`usuario_${nuevoJugador.nombre}`, JSON.stringify(nuevoJugador));
+    localStorage.setItem('usuarioActual', JSON.stringify(nuevoJugador));
+    sessionStorage.setItem('usuarioEnSesion', nuevoJugador.nombre);
+    
     const admin = localStorage.getItem('usuarioAdministrador');
-const adminNombre = admin ? JSON.parse(admin).nombre : '';
-
-if (nuevoJugador.nombre !== adminNombre) {
-  localStorage.setItem('usuarioActual', JSON.stringify(nuevoJugador));
-}
-
-
-    // Si aún no hay admin, este será el primero
-    if (!localStorage.getItem('usuarioAdministrador')) {
-      localStorage.setItem('usuarioAdministrador', JSON.stringify(nuevoJugador));
-    }
+    const adminNombre = admin ? JSON.parse(admin).nombre : '';
 
     this.cerrar.emit();
 
-    // ✅ Redirigir a la mesa sin el query "invitado=true"
     this.router.navigate(['/mesa-votacion'], {
       queryParams: { nombrePartida: this.nombrePartida }
     });
+    window.dispatchEvent(new StorageEvent('storage', { key: 'jugadores_' + this.nombrePartida }));
+
   }
 }

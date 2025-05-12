@@ -47,10 +47,11 @@
   transform: scale(1.05);
   box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
 }
-
 .carta.seleccionada {
   background-color: #E4A4FF;
   border: 2px solid #E4A4FF;
   color: #330072;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  transform: translateY(-12px) scale(1.06);
+  z-index: 2;
 }

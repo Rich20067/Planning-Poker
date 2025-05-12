@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AvatarService } from '../../services/avatar.service';
 
 @Component({
@@ -15,9 +15,10 @@ export class CrearUsuarioAdministradorComponent {
   adminForm: FormGroup;
   nombrePartida: string = '';
 
+  @Output() cerrar = new EventEmitter<void>(); // nuevo output
+
   constructor(
     private fb: FormBuilder,
-    private router: Router,
     private avatarService: AvatarService
   ) {
     this.adminForm = this.fb.group({
@@ -30,7 +31,7 @@ export class CrearUsuarioAdministradorComponent {
           Validators.pattern(/^(?!\d+$)(?!.*[_.\-*/#])(?=(?:[^0-9]*[0-9]){0,3}[^0-9]*$)[A-Za-z0-9 ]+$/)
         ]
       ],
-      modo: ['jugador', Validators.required] // Modo por defecto
+      modo: ['jugador', Validators.required]
     });
 
     const nombreGuardado = localStorage.getItem('nombrePartida');
@@ -59,30 +60,24 @@ export class CrearUsuarioAdministradorComponent {
         cartaSeleccionada: false
       };
 
-      // Guardar como administrador y usuario actual
+      // Guardar datos
       const adminJson = JSON.stringify(usuarioAdministrador);
       localStorage.setItem('usuarioAdministrador', adminJson);
       localStorage.setItem('usuarioActual', adminJson);
       localStorage.setItem(`usuario_${usuarioAdministrador.nombre}`, adminJson);
       sessionStorage.setItem('usuarioEnSesion', usuarioAdministrador.nombre);
 
-      // Clave necesaria para cambio de modo
-      localStorage.setItem(`usuario_${usuarioAdministrador.nombre}`, JSON.stringify(usuarioAdministrador));
-
-      // Agregar a la lista de jugadores sin duplicar
       const storageKey = `jugadores_${this.nombrePartida}`;
       const jugadores: UsuarioAdministrador[] = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      const yaExiste = jugadores.some((j: UsuarioAdministrador) => j.nombre === usuarioAdministrador.nombre);
+      const yaExiste = jugadores.some(j => j.nombre === usuarioAdministrador.nombre);
       if (!yaExiste) {
         jugadores.push(usuarioAdministrador);
       }
 
       localStorage.setItem(storageKey, JSON.stringify(jugadores));
 
-      // Redirigir a la mesa sin "invitado=true"
-      this.router.navigate(['/mesa-votacion'], {
-        queryParams: { nombrePartida: this.nombrePartida }
-      });
+      // Cierra el modal y deja en la mesa
+      this.cerrar.emit();
     } else {
       this.adminForm.markAllAsTouched();
     }

@@ -6,6 +6,8 @@ import { ElegirCartaComponent } from '../elegir-carta/elegir-carta.component';
 import { LinkService } from '../../services/link.service';
 import { UnirsePartidaComponent } from '../unirse-partida/unirse-partida.component';
 import { CrearUsuarioAdministradorComponent } from '../crear-usuario-administrador/crear-usuario-administrador.component';
+import { ViewChild, TemplateRef } from '@angular/core'
+
 
 @Component({
   selector: 'app-mesa-votacion',
@@ -15,7 +17,7 @@ import { CrearUsuarioAdministradorComponent } from '../crear-usuario-administrad
     FormsModule,
     ElegirCartaComponent,
     UnirsePartidaComponent,
-    CrearUsuarioAdministradorComponent
+    CrearUsuarioAdministradorComponent,
   ],
   templateUrl: './mesa-votacion.component.html',
   styleUrls: ['./mesa-votacion.component.css'],
@@ -42,7 +44,7 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
 modoTemporalPuntaje: any = null;
 mostrarCrearAdminOverlay = false;
 
-
+@ViewChild('jugadorTemplate') jugadorTemplate!: TemplateRef<any>;
   modosDePuntaje = [
     { nombre: 'Fibonacci', valores: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?', '☕'] },
     { nombre: 'Camisetas', valores: ['XS', 'S', 'M', 'L', 'XL', '?', '☕'] },
@@ -68,33 +70,42 @@ mostrarCrearAdminOverlay = false;
 
     this.route.queryParams.subscribe((params) => {
       const esInvitado = params['invitado'] === 'true';
+      const crearAdmin = params['crearAdmin'] === 'true';
       const nombrePartidaParam = params['nombrePartida'];
-
+    
       if (nombrePartidaParam) {
         this.nombrePartida = nombrePartidaParam;
         localStorage.setItem('nombrePartida', this.nombrePartida);
       } else {
         this.nombrePartida = localStorage.getItem('nombrePartida') || '';
       }
-
+    
       this.linkDeInvitacion = this.linkService.generarLink(this.nombrePartida);
-
+    
       this.usuarioAdministrador = this.obtenerUsuarioAdministrador();
       this.usuarioActual = this.obtenerUsuarioActual();
       this.validarAdministrador();
-
+    
       const storageKey = `jugadores_${this.nombrePartida}`;
       const jugadores = JSON.parse(localStorage.getItem(storageKey) || '[]');
       const usuarioYaRegistrado = jugadores.some(
         (j: any) => j.nombre === this.usuarioActual?.nombre
       );
-
+    
+      // ✅ Mostrar modal de unirse solo si NO estás creando admin
       this.mostrarUnirseOverlay =
-        esInvitado || !this.usuarioActual || !usuarioYaRegistrado;
+        !crearAdmin && (esInvitado || !this.usuarioActual || !usuarioYaRegistrado);
+    
+      // ✅ Mostrar modal de crear admin solo si vienes de ese flujo
+      if (crearAdmin) {
+        this.mostrarCrearAdminOverlay = true;
+      }
+    
       if (!this.mostrarUnirseOverlay) {
         this.cargarJugadores();
       }
     });
+    
 
     window.addEventListener('storage', this.onStorageChange.bind(this));
 
@@ -117,7 +128,31 @@ mostrarCrearAdminOverlay = false;
     const actualGuardado = localStorage.getItem('usuarioActual');
     return actualGuardado ? JSON.parse(actualGuardado) : null;
   }
+  cerrarCrearAdminOverlay(): void {
+    this.mostrarCrearAdminOverlay = false;
+    this.usuarioAdministrador = this.obtenerUsuarioAdministrador();
+    this.usuarioActual = this.obtenerUsuarioActual();
+    this.validarAdministrador();
+    this.cargarJugadores();
+  }
+  getPosicionCircular(index: number, total: number): any {
+    const radioX = 380; // ancho del óvalo
+    const radioY = 200; // alto del óvalo
+    const angle = (2 * Math.PI * index) / total;
+  
+    const x = radioX * Math.cos(angle);
+    const y = radioY * Math.sin(angle);
+  
+    return {
+      position: 'absolute',
+      top: `calc(50% + ${y}px)`,
+      left: `calc(50% + ${x}px)`,
+      transform: 'translate(-50%, -50%)'
+    };
+  }
 
+  
+  
   validarAdministrador(): void {
     const actual = this.usuarioActual?.nombre?.trim();
     const admin = this.usuarioAdministrador?.nombre?.trim();
@@ -173,6 +208,11 @@ mostrarCrearAdminOverlay = false;
     this.mostrarModalModo = false;
     this.modoTemporal = this.usuarioActual?.modo; // vuelve a dejarlo como estaba
   }
+  get jugadoresFiltrados(): any[] {
+    return this.jugadores
+      .filter(j => j && j.nombre && j.nombre !== this.usuarioActual?.nombre)
+      .map((j, i) => ({ ...j, index: i }));
+  }
   
   alternarModo(): void {
     if (!this.usuarioActual) return;
@@ -202,15 +242,17 @@ mostrarCrearAdminOverlay = false;
     if (admin) {
       const cartaAdmin = localStorage.getItem(`carta-${admin.nombre}`);
       admin.carta = cartaAdmin ?? null;
-      const yaExiste = this.jugadores.find((j) => j.nombre === admin.nombre);
+    
+      const yaExiste = this.jugadores.some(j => j.nombre === admin.nombre);
       if (!yaExiste) {
         this.jugadores.unshift(admin);
       } else {
-        this.jugadores = this.jugadores.map((j) =>
+        this.jugadores = this.jugadores.map(j =>
           j.nombre === admin.nombre ? { ...j, carta: admin.carta } : j
         );
       }
     }
+    
 
     this.actualizarEstadoAdministrador();
     this.contarVotos();
@@ -277,7 +319,8 @@ mostrarCrearAdminOverlay = false;
       }
     });
 
-    this.promedioVotos = cantidad > 0 ? Math.round(suma / cantidad) : null;
+    this.promedioVotos = cantidad > 0 ? parseFloat((suma / cantidad).toFixed(1)) : null;
+
   }
 
   actualizarCartasConVotos(): void {

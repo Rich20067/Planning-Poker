@@ -1,25 +1,41 @@
-<div class="contenedor-unirse">
-  <h2>Unirse a la partida</h2>
+<main class="contenedor-central">
+  <h1 class="titulo-principal">Unirse a la partida</h1>
 
   <form [formGroup]="form" (ngSubmit)="unirse()">
-    <div class="campo-formulario">
-      <label for="nombre">Nombre:</label>
+    
+    <!-- Campo nombre -->
+    <article class="form-section">
+      <label for="nombre">Tu nombre</label>
       <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre..." />
-      <div *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched" class="error">
+
+      <div class="error" *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
         El nombre debe tener entre 3 y 20 caracteres.
       </div>
-    </div>
+    </article>
 
-    <div class="campo-formulario">
-      <label for="modo">Modo:</label>
-      <select id="modo" formControlName="modo">
-        <option value="jugador">Jugador</option>
-        <option value="espectador">Espectador</option>
-      </select>
-    </div>
+    <!-- Radios personalizados -->
+    <article class="form-section">
+      <div class="opciones-radio">
+        <label>
+          <input type="radio" formControlName="modo" value="jugador" />
+          <span class="radio-custom"></span>
+          <span>Jugador</span>
+        </label>
+        <label>
+          <input type="radio" formControlName="modo" value="espectador" />
+          <span class="radio-custom"></span>
+          <span>Espectador</span>
+        </label>
+      </div>
 
-    <div class="acciones-formulario">
+      <div class="error" *ngIf="form.get('modo')?.invalid && form.get('modo')?.touched">
+        El modo es obligatorio.
+      </div>
+    </article>
+
+    <!-- Botón -->
+    <footer class="form-footer">
       <button type="submit" [disabled]="form.invalid">Unirse</button>
-    </div>
+    </footer>
   </form>
-</div>
+</main>

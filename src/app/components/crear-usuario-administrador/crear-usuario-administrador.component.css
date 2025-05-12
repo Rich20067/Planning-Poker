@@ -1,203 +1,124 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-  box-sizing: border-box;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-.fondo {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url('/assets/fondoo.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+:host {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  z-index: 0;
-  padding: 2rem 1rem;
-}
-
-.burbujeo {
-  position: absolute;
   width: 100%;
   height: 100%;
-  z-index: 0;
-  overflow: hidden;
-  top: 0;
-  left: 0;
-  pointer-events: none;
 }
 
-.burbujeo::before,
-.burbujeo::after {
-  content: '';
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.08) 12%, transparent 60%);
-  animation: flotar 25s infinite linear;
-}
-
-.burbujeo::after {
-  animation-duration: 40s;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 12%, transparent 60%);
-}
-
-@keyframes flotar {
-  0% { transform: translate(0%, 0%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-/* Contenedor general centrado y desplazado a la derecha */
 .contenedor-central {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transform: translateX(15%);
+  background: #1a0a2a;
+  padding: 2rem 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 15px #9f5eff, 0 0 30px #551ea8;
+  border: 1.5px solid #9f5eff;
+  max-width: 400px;
   width: 100%;
-  min-height: 100vh;
-  text-align: center;
-  z-index: 1;
+  color: white;
+  animation: fadeIn 0.5s ease;
 }
 
 .titulo-principal {
-  font-size: 2.8rem;
-  color: white;
-  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6);
-  font-weight: bold;
-  letter-spacing: 1px;
   text-align: center;
-  margin-bottom: 2rem;
-  z-index: 2;
-}
-
-.crear-partida-card {
-  background-color: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  width: 100%;
-  max-width: 450px;
-  min-height: 250px;
-  z-index: 1;
-}
-
-/* Secciones internas */
-.titulo {
-  font-size: 1.8rem;
-  color: #e0e0e0;
   margin-bottom: 1.5rem;
-  text-align: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
 }
 
 .form-section {
   margin-bottom: 1.5rem;
 }
 
-.form-footer {
+input[type="text"] {
+  width: 100%;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: 1.5px solid #9f5eff;
+  background: transparent;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Radios personalizados con glow */
+.opciones-radio {
   display: flex;
   justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
 }
 
-/* Inputs y Select */
-input, select {
-  width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.3rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+.opciones-radio label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 1rem;
-  background-color: white;
-  color: black;
-  backdrop-filter: blur(10px);
+  color: white;
+  cursor: pointer;
+  position: relative;
 }
 
-select option {
-  color: black;
+.opciones-radio input[type="radio"] {
+  opacity: 0;
+  position: absolute;
+}
+
+.radio-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #a855f7;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 6px #a855f7;
+}
+
+.opciones-radio input[type="radio"]:checked + .radio-custom::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #a855f7 0%, #9333ea 100%);
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  box-shadow: 0 0 4px #9333ea;
 }
 
 /* Botón */
-button {
-  width: 250px;
-  height: 45px;
-  font-size: 1.2rem;
-  padding: 0.5rem 1rem;
+button[type="submit"] {
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 1rem;
+  background-color: white;
+  color: #1a0a2a;
+  font-weight: bold;
+  border-radius: 999px;
   border: none;
-  background-color: #ff9500;
-  color: rgb(10, 10, 10);
-  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #dc2f11;
+button[type="submit"]:disabled {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: not-allowed;
 }
 
-/* Validación */
-.error {
-  color: white;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
-  font-size: 0.9rem;
-}
-
-/* Responsive: Tablets */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .contenedor-central {
-    transform: translateX(5%);
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
   }
-  .titulo-principal {
-    font-size: 2.4rem;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
-}
-
-/* Responsive: Móviles */
-@media (max-width: 768px) {
-  .contenedor-central {
-    transform: translateX(0);
-    padding: 2rem 1rem;
-  }
-
-  .titulo-principal {
-    font-size: 2rem;
-    white-space: normal;
-  }
-
-  .crear-partida-card {
-    padding: 1.5rem;
-    width: 95%;
-  }
-}
-
-/* Header de nombre de partida */
-.nombre-partida-header {
-  position: absolute;
-  top: 1rem;
-  font-size: 1rem;
-  color: #fff;
-  font-weight: bold;
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  margin-left: 81%;
 }

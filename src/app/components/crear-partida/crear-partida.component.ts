@@ -36,9 +36,9 @@ export class CrearPartidaComponent {
       localStorage.setItem('nombrePartida', nombrePartida);
 
       // Redirige a crear-usuario-administrador
-      this.router.navigate(['/crear-usuario-administrador']);
-    } else {
-      this.partidaForm.markAllAsTouched();
-    }
-  }
+      this.router.navigate(['/mesa-votacion'], {
+        queryParams: { crearAdmin: 'true', nombrePartida }
+      });
+}
+}
 }
