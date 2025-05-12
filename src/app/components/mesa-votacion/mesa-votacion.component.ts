@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ElegirCartaComponent } from '../elegir-carta/elegir-carta.component';
-import { AvatarService } from '../../services/avatar.service';
 import { LinkService } from '../../services/link.service';
 import { UnirsePartidaComponent } from '../unirse-partida/unirse-partida.component';
+import { CrearUsuarioAdministradorComponent } from '../crear-usuario-administrador/crear-usuario-administrador.component';
 
 @Component({
   selector: 'app-mesa-votacion',
@@ -15,6 +15,7 @@ import { UnirsePartidaComponent } from '../unirse-partida/unirse-partida.compone
     FormsModule,
     ElegirCartaComponent,
     UnirsePartidaComponent,
+    CrearUsuarioAdministradorComponent
   ],
   templateUrl: './mesa-votacion.component.html',
   styleUrls: ['./mesa-votacion.component.css'],
@@ -23,15 +24,24 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
   nombrePartida: string = '';
   jugadores: any[] = [];
   usuarioAdministrador: any;
+  mostrarModalInvitacion: boolean = false;
+  mensajeCopiado: boolean = false;
   usuarioActual: any;
   esAdministrador: boolean = false;
   cartasDisponibles: (number | string)[] = [];
   cartasReveladas: boolean = false;
+  mostrandoCarga: boolean = false;
   votosPorCarta: { [carta: string]: number } = {};
   promedioVotos: number | null = null;
   cartasConVotos: (string | number)[] = [];
   mostrarUnirseOverlay = false;
   linkDeInvitacion: string = '';
+  mostrarModalModo = false;
+  modoTemporal: string = '';
+  mostrarModalPuntaje: boolean = false;
+modoTemporalPuntaje: any = null;
+mostrarCrearAdminOverlay = false;
+
 
   modosDePuntaje = [
     { nombre: 'Fibonacci', valores: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?', '☕'] },
@@ -44,7 +54,6 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private avatarService: AvatarService,
     private linkService: LinkService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -151,7 +160,20 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
     window.dispatchEvent(new StorageEvent('storage', { key: 'usuarioActual' }));
   }
-
+  abrirModalModo(): void {
+    this.modoTemporal = this.usuarioActual?.modo;
+    this.mostrarModalModo = true;
+  }
+  aceptarCambioModo(): void {
+    this.cambiarModo(this.modoTemporal);
+    this.mostrarModalModo = false;
+  }
+  
+  cerrarModalModo(): void {
+    this.mostrarModalModo = false;
+    this.modoTemporal = this.usuarioActual?.modo; // vuelve a dejarlo como estaba
+  }
+  
   alternarModo(): void {
     if (!this.usuarioActual) return;
     const nuevoModo =
@@ -171,9 +193,6 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
       const datos = datosActualizados ? JSON.parse(datosActualizados) : jugador;
       const carta = localStorage.getItem(`carta-${jugador.nombre}`);
       datos.carta = carta ?? null;
-      if (!datos.avatarUrl) {
-        datos.avatarUrl = this.avatarService.generarAvatarAleatorio();
-      }
       return datos;
     });
 
@@ -211,7 +230,25 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
       this.jugadores.unshift(admin);
     }
   }
-
+  abrirModalPuntaje(): void {
+    this.modoTemporalPuntaje = this.modoSeleccionado;
+    this.mostrarModalPuntaje = true;
+  }
+  
+  cerrarModalPuntaje(): void {
+    this.mostrarModalPuntaje = false;
+  }
+  
+  aceptarCambioPuntaje(): void {
+    if (
+      this.modoTemporalPuntaje &&
+      this.modoTemporalPuntaje.nombre !== this.modoSeleccionado.nombre
+    ) {
+      this.modoSeleccionado = this.modoTemporalPuntaje;
+      this.cambiarModoDePuntaje();
+    }
+    this.cerrarModalPuntaje();
+  }
   contarVotos(): void {
     this.votosPorCarta = {};
     this.jugadores.forEach((jugador) => {
@@ -275,12 +312,23 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
 
   revelarCartas(): void {
     if (!this.esAdministrador) return;
-    this.cartasReveladas = true;
-    localStorage.setItem(`cartasReveladas_${this.nombrePartida}`, 'true');
-    this.contarVotos();
-    this.calcularPromedio();
-    this.actualizarCartasConVotos();
+  
+    this.mostrandoCarga = true;
+  
+    setTimeout(() => {
+      this.cartasReveladas = true;
+      this.mostrandoCarga = false;
+      localStorage.setItem(`cartasReveladas_${this.nombrePartida}`, 'true');
+      this.contarVotos();
+      this.calcularPromedio();
+      this.actualizarCartasConVotos();
+    }, 2500);
   }
+  getCartaSeleccionadaActual(): string | null {
+    const clave = `carta-${this.usuarioActual?.nombre}`;
+    return localStorage.getItem(clave);
+  }
+  
 
   cerrarRevelacion(): void {
     if (!this.esAdministrador) return;
@@ -308,12 +356,23 @@ export class MesaVotacionComponent implements OnInit, OnDestroy {
     this.cargarJugadores();
   }
 
+  abrirModalInvitacion(): void {
+    this.mostrarModalInvitacion = true;
+  }
+  
+  cerrarModalInvitacion(): void {
+    this.mostrarModalInvitacion = false;
+  }
+  
   copiarAlPortapapeles(): void {
     navigator.clipboard.writeText(this.linkDeInvitacion).then(() => {
-      alert('¡Link copiado al portapapeles!');
+      this.mensajeCopiado = true;
+      setTimeout(() => {
+        this.mensajeCopiado = false;
+      }, 3000); // Se oculta después de 3 segundos
     });
   }
-
+  
   cerrarOverlay(): void {
     this.mostrarUnirseOverlay = false;
     this.usuarioActual = this.obtenerUsuarioActual();

@@ -1,23 +1,28 @@
-<div class="contenedor" *ngIf="modo === 'jugador' || esAdministrador(); else noJugador">
 
-  <h3>Elige una carta</h3>
+<section *ngIf="modo === 'jugador' || esAdministrador(); else noJugador" class="contenedor" aria-labelledby="titulo-eleccion-carta">
+  <h2 class="titulo-carta">Elige una carta 👇</h2>
 
-  <div *ngIf="cartas.length === 0" class="mensaje-error">
+
+
+  <div *ngIf="cartas.length === 0" class="mensaje-error" role="alert">
     No hay cartas registradas 😢
   </div>
 
   <div class="cartas" *ngIf="cartas.length > 0">
     <button 
       class="carta" 
-      *ngFor="let carta of cartas" 
+      *ngFor="let carta of cartas"
       (click)="elegirCarta(carta)"
       [class.seleccionada]="cartaSeleccionada === carta"
+      [attr.aria-pressed]="cartaSeleccionada === carta"
     >
       {{ carta }}
     </button>
   </div>
-</div>
+  
+
+</section>
 
 <ng-template #noJugador>
-  <p class="mensaje-error">Modo espectador: no puedes elegir carta.</p>
+  <p class="mensaje-error" role="alert">Modo espectador: no puedes elegir carta.</p>
 </ng-template>

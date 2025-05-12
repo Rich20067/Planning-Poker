@@ -1,36 +1,42 @@
-<div class="fondo">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+
+<!-- Fondo general -->
+<main class="fondo">
   <div class="burbujeo"></div>
 
-  <div class="contenedor-central">
-    <h1 class="titulo-principal">
-      Bienvenido a Tu<br />
-      Poker Planning 🃏
-    </h1>
+  <!-- Encabezado superior izquierdo -->
+  <header class="encabezado-superior">
+    <img src="assets/logopragma.png" alt="Logo Pragma" class="logo-encabezado" />
+    <span class="texto-encabezado">Crear partida</span>
+  </header>
 
-    <div class="crear-partida-card">
-      <h2 class="titulo">🎡Crear Partida</h2>
-
+  <!-- Contenido principal -->
+  <section class="contenedor-central">
+    <article class="crear-partida-card">
       <form [formGroup]="partidaForm" (ngSubmit)="crearPartida()">
         <div class="form-section">
-          <input id="nombre" formControlName="nombre" placeholder="Nombre de la Partida" />
-
-          <div class="error" *ngIf="nombre?.touched && nombre?.invalid">
-            <div *ngIf="nombre?.errors?.['required']">El nombre es obligatorio.</div>
-            <div *ngIf="nombre?.errors?.['minlength']">Debe tener al menos 5 caracteres.</div>
-            <div *ngIf="nombre?.errors?.['maxlength']">No puede tener más de 20 caracteres.</div>
-            <div *ngIf="nombre?.errors?.['pattern']">
-              El nombre no debe contener solo números, ni caracteres especiales (_,.*#/-),
-              y máximo puede tener 3 números.
-            </div>
-          </div>
+          <label for="nombre">Nombra la partida</label>
+          <input id="nombre" formControlName="nombre" />
         </div>
 
+        <!-- Botón -->
         <div class="form-footer">
           <button class="boton-admin" type="submit">
-            Empecemos 🎮
+            Crear partida
           </button>
         </div>
+
+        <!-- ⚠️ Mensaje de error debajo del botón -->
+        <div class="error" *ngIf="nombre?.touched && nombre?.invalid">
+          <div *ngIf="nombre?.errors?.['required']">El nombre es obligatorio.</div>
+          <div *ngIf="nombre?.errors?.['minlength']">Debe tener al menos 5 caracteres.</div>
+          <div *ngIf="nombre?.errors?.['maxlength']">No puede tener más de 20 caracteres.</div>
+          <div *ngIf="nombre?.errors?.['pattern']">
+            El nombre no debe contener solo números, ni caracteres especiales (_,.*#/-),
+            y máximo puede tener 3 números.
+          </div>
+        </div>
       </form>
-    </div>
-  </div>
-</div>
+    </article>
+  </section>
+</main>

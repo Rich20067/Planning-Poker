@@ -1,116 +1,45 @@
-.fondo {
-  background-image: url('/assets/fondoo.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  min-height: 100vh;
-  width: 100%;
+/* Encabezado superior izquierdo */
+.encabezado-superior {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  z-index: 10;
+  font-family: 'Poppins', sans-serif;
+}
+
+.logo-encabezado {
+  width: 50px;
+  height: 50px;
+}
+
+/* Contenedor central */
+.contenedor-central {
   display: flex;
   flex-direction: column;
-  justify-content: center;  /* centra verticalmente */
-  align-items: center;      /* centra horizontalmente */
-  padding: 2rem 1rem;
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-}
-
-.burbujeo {
-  position: absolute;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  padding: 4rem;
   width: 100%;
-  height: 100%;
-  z-index: 0;
-  overflow: hidden;
-  top: 0;
-  left: 0;
-  pointer-events: none;
+  min-height: 100vh;
+  color: #e0e0e0;
+  font-family: 'Poppins', sans-serif;
+  gap: 2rem;
 }
 
-.burbujeo::before,
-.burbujeo::after {
-  content: '';
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.08) 12%, transparent 60%);
-  animation: flotar 25s infinite linear;
-}
-
-.burbujeo::after {
-  animation-duration: 40s;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 12%, transparent 60%);
-}
-
-@keyframes flotar {
-  0% {
-    transform: translate(0%, 0%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
-
-/* Responsive */
-@media (max-width: 768px) {
-
- 
-  .titulo-principal {
-    font-size: 2.2rem;
-    top: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .titulo-principal {
-    font-size: 1.8rem;
-    text-align: center;
-    padding: 0 1rem;
-  }
-
-  input, button {
-    font-size: 1rem;
-  }
-
-  .crear-partida-card {
-    padding: 1rem;
-  }
-}
-
-@keyframes flotar {
-  0% {
-    transform: translate(0%, 0%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
+/* Tarjeta */
 .crear-partida-card {
-  background-color: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
   width: 100%;
   max-width: 450px;
   z-index: 1;
+  margin-top: 2rem;
 }
-
-
-.titulo-principal {
-  font-size: 2.8rem;
-  color: white;
-  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6);
-  font-weight: bold;
-  letter-spacing: 1px;
-  text-align: center;
-  margin-bottom: 2rem; /* espacio entre título y tarjeta */
-  z-index: 2;
-}
-
 
 .titulo {
   font-size: 1.8rem;
@@ -121,6 +50,8 @@
 
 .form-section {
   margin-bottom: 1.5rem;
+  width: 100%;
+  text-align: center;
 }
 
 .form-footer {
@@ -128,59 +59,69 @@
   justify-content: center;
 }
 
-/* Inputs */
-input {
-  width: 80%;
-  padding: 0.5rem;
-  margin-top: 0.3rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-left: 10%;
-  
+/* Label */
+label {
+  display: block;
+  width: 300px;               /* mismo ancho que el input */
+  margin: 0 auto 0.8rem auto; /* centrado + espacio debajo */
+  font-size: 1rem;
+  color: #e0e0e0;
+  text-align: left;           /* texto alineado con el inicio del input */
+  box-sizing: border-box;
 }
+
+input {
+  width: 300px;               /* puedes ajustar el largo a gusto */
+  margin: 0 auto;
+  padding: 0.7rem 1rem;
+  border: 2px solid #BB65FF;
+  border-radius: 999px;
+  background: transparent;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  display: block;
+}
+
 
 /* Botón */
 button {
-  width: 250px;
-  height: 35px;
+  width: 200px;
+  height: 43px;
   font-size: 1.1rem;
-  padding: rem 1rem;
+  padding: 0 1rem;
   border: none;
-  background-color: #c4770aaf;
-  color: rgb(10, 10, 10);
-  border-radius: 8px;
+  background-color: #9D9DA14D;
+  color: #bfbfc74d;
+  border-radius: 999px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: -5%;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
-
 
 button:hover {
-  background-color: #c8ae2b;
-  transform: scale(1.05);
+  background-color: #F6F7FC;
+  color: #330072;
 }
 
-/* Errores de validación */
+/* Errores */
 .error {
   font-size: 0.9rem;
   color: white;
-  margin-top: -0.5rem; /*  Lo sube justo debajo del input */
-  margin-bottom: 0.8rem; /* Espacio inferior si querés separar del siguiente campo */
+  margin-top: 1rem;
+  text-align: center;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
-  margin-left: 10%;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* Pantallas medianas (tablets y laptops pequeñas) */
+/* Responsive: tablets */
 @media (min-width: 769px) and (max-width: 1024px) {
-  .titulo-principal {
-    left: 60%;
-    transform: translateX(-50%);
-    font-size: 2.4rem;
-    top: 1.5rem;
-    white-space: nowrap;
-  }
-
   .crear-partida-card {
     margin-left: auto;
     margin-right: auto;
@@ -190,18 +131,8 @@ button:hover {
   }
 }
 
-/* Pantallas pequeñas (móviles) */
+/* Responsive: móviles */
 @media (max-width: 768px) {
-  .titulo-principal {
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2.1rem;
-    top: 1rem;
-    text-align: center;
-    padding: 0 1rem;
-    white-space: normal;
-  }
-
   .crear-partida-card {
     margin-left: auto;
     margin-right: auto;
@@ -210,30 +141,27 @@ button:hover {
     max-width: 90%;
     padding: 1.3rem;
   }
+
+  input, button {
+    font-size: 1rem;
+  }
+
+  .titulo {
+    font-size: 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .titulo-principal {
-    font-size: 1.8rem;
-    top: 0.5rem;
+  .titulo {
+    font-size: 1.3rem;
+  }
+
+  .crear-partida-card {
+    padding: 1rem;
+  }
+
+  input {
+    width: 90%;        /* para que no se rompa en pantallas muy pequeñas */
+    max-width: 300px;  /* o lo que desees */
   }
 }
-.contenedor-central {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transform: translateX(25%); /* MÁS A LA DERECHA */
-  text-align: center;
-  width: 100%;
-  min-height: 100vh;
-}
-
-@media (max-width: 768px) {
-  .contenedor-central {
-    transform: translateX(0);
-    padding: 2rem 1rem;
-  }
-}
-
-

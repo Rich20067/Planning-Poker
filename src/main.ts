@@ -6,3 +6,7 @@ import { routes } from './app/app.routes';
 bootstrapApplication(AppComponent, {
   providers: [provideRouter(routes)]
 });
+setTimeout(() => {
+  const splash = document.getElementById('splash-screen');
+  if (splash) splash.style.display = 'none';
+}, 3000);

@@ -1,50 +1,46 @@
-<div class="fondo">
-  <div class="burbujeo"></div>
+<!-- Mostrar el nombre de la partida -->
+<header class="nombre-partida-header">
+  <p>Partida: <strong>{{ nombrePartida || 'Sin nombre' }}</strong></p>
+</header>
 
-  <!-- Mostrar el nombre de la partida que viene de localStorage -->
-  <div class="nombre-partida-header">
-    Partida: <strong>{{ nombrePartida || 'Sin nombre' }}</strong>
-  </div>
+<main class="contenedor-central">
+  <h1 class="titulo-principal">Crear Usuario Administrador 💼</h1>
 
-  <div class="contenedor-central">
-    <h1 class="titulo-principal">
-      Crear Usuario Administrador 💼
-    </h1>
+  <section class="crear-partida-card">
+    <h2 class="titulo">Ingresa Tus Datos</h2>
 
-    <div class="crear-partida-card">
-      <h2 class="titulo">Ingresa Tus Datos</h2>
+    <form [formGroup]="adminForm" (ngSubmit)="crearUsuarioAdministrador()" aria-label="Formulario para crear usuario administrador">
+      <article class="form-section">
+        <label for="nombre">Nombre del Administrador</label>
+        <input id="nombre" formControlName="nombre" placeholder="Nombre del Administrador" />
 
-      <form [formGroup]="adminForm" (ngSubmit)="crearUsuarioAdministrador()">
-        <div class="form-section">
-          <input id="nombre" formControlName="nombre" placeholder="Nombre del Administrador" />
-
-          <div class="error" *ngIf="nombre?.touched && nombre?.invalid">
-            <div *ngIf="nombre?.errors?.['required']">El nombre es obligatorio.</div>
-            <div *ngIf="nombre?.errors?.['minlength']">Debe tener al menos 5 caracteres.</div>
-            <div *ngIf="nombre?.errors?.['maxlength']">No puede tener más de 20 caracteres.</div>
-            <div *ngIf="nombre?.errors?.['pattern']">
-              El nombre no debe contener solo números, ni caracteres especiales (_,.*#/-),
-              y máximo puede tener 3 números.
-            </div>
+        <div class="error" *ngIf="nombre?.touched && nombre?.invalid">
+          <div *ngIf="nombre?.errors?.['required']">El nombre es obligatorio.</div>
+          <div *ngIf="nombre?.errors?.['minlength']">Debe tener al menos 5 caracteres.</div>
+          <div *ngIf="nombre?.errors?.['maxlength']">No puede tener más de 20 caracteres.</div>
+          <div *ngIf="nombre?.errors?.['pattern']">
+            El nombre no debe contener solo números, ni caracteres especiales (_,.*#/-),
+            y máximo puede tener 3 números.
           </div>
         </div>
+      </article>
 
-        <div class="form-section">
-          <select id="modo" formControlName="modo">
-            <option value="" disabled hidden>Selecciona modo de visualización</option>
-            <option value="jugador">Jugador</option>
-            <option value="espectador">Espectador</option>
-          </select>
+      <article class="form-section">
+        <label for="modo">Modo de Visualización</label>
+        <select id="modo" formControlName="modo">
+          <option value="" disabled hidden>Selecciona modo de visualización</option>
+          <option value="jugador">Jugador</option>
+          <option value="espectador">Espectador</option>
+        </select>
 
-          <div class="error" *ngIf="modo?.touched && modo?.invalid">
-            <div *ngIf="modo?.errors?.['required']">El modo es obligatorio.</div>
-          </div>
+        <div class="error" *ngIf="modo?.touched && modo?.invalid">
+          <div *ngIf="modo?.errors?.['required']">El modo es obligatorio.</div>
         </div>
+      </article>
 
-        <div class="form-footer">
-          <button type="submit" [disabled]="adminForm.invalid">Crear Administrador 💼</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+      <footer class="form-footer">
+        <button type="submit" [disabled]="adminForm.invalid">Crear Administrador 💼</button>
+      </footer>
+    </form>
+  </section>
+</main>

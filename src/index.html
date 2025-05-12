@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,8 +7,37 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Estilos inline opcionales */
+  </style>
 </head>
 <body>
-  <app-root></app-root>
+
+  <!-- Pantalla de carga (Splash Screen) -->
+  <section id="splash-screen" role="dialog" aria-label="Pantalla de carga inicial">
+    <div class="splash-content">
+      <img src="assets/logopragma.png" alt="Logo principal" class="logo-principal">
+      <img src="assets/pragma.png" alt="Sub imagen" class="logo-secundario">
+    </div>
+  </section>
+
+  <!-- Contenido principal de la aplicación Angular -->
+  <main>
+    <app-root></app-root>
+  </main>
+
+  <!-- Lógica para ocultar el splash -->
+  <script>
+    setTimeout(() => {
+      const splash = document.getElementById('splash-screen');
+      if (splash) {
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.display = 'none', 1000);
+      }
+    }, 3000);
+  </script>
+
 </body>
 </html>
